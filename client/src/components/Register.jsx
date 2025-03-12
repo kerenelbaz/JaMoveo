@@ -5,8 +5,10 @@ import Autocomplete from "@mui/material/Autocomplete";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-export default function Register() {
+export default function Register(setIsLogged, setUsernameLogged) {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         username: "",
         password: "",
@@ -46,6 +48,9 @@ export default function Register() {
             const response = await axios.post("http://localhost:3001/users/sign-up", formData);
             if (response.status === 200) {
                 setOpenSnackbar({ success: true, error: false });
+                setIsLogged(true)
+                setUsernameLogged(formData.username);
+                navigate("/main");
             }
             // eslint-disable-next-line no-unused-vars
         } catch (error) {
@@ -66,6 +71,7 @@ export default function Register() {
                         onChange={handleChange}
                         required
                         fullWidth
+                        style={{marginBottom:'10px'}}
                     />
                 </div>
                 <div>
@@ -77,6 +83,7 @@ export default function Register() {
                         onChange={handleChange}
                         required
                         fullWidth
+                        style={{marginBottom:'10px'}}
                     />
                 </div>
                 <div>
@@ -85,7 +92,7 @@ export default function Register() {
                         getOptionLabel={(option) => option}
                         onChange={handleInstrumentChange}
                         renderInput={(params) => (
-                            <TextField {...params} label="Instrument" required fullWidth />
+                            <TextField {...params} label="Instrument"  fullWidth />
                         )}
                     />
                 </div>
@@ -94,17 +101,15 @@ export default function Register() {
                 </Button>
             </form>
 
-            {/* Snackbar for success */}
             <Snackbar open={openSnackbar.success} autoHideDuration={6000} onClose={handleCloseSnackbar}>
                 <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: "100%" }}>
-                    Registration Successful! ✅
+                    Registration Successful! 
                 </Alert>
             </Snackbar>
 
-            {/* Snackbar for error */}
             <Snackbar open={openSnackbar.error} autoHideDuration={6000} onClose={handleCloseSnackbar}>
                 <Alert onClose={handleCloseSnackbar} severity="error" sx={{ width: "100%" }}>
-                    Registration Failed! ❌
+                    Registration Failed! 
                 </Alert>
             </Snackbar>
         </div>
