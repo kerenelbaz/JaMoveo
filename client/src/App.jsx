@@ -18,16 +18,20 @@ import LivePage from './components/LivePage'
 function App() {
   // const [count, setCount] = useState(0)
   const [islogged, setIsLogged] = useState(false);
-  const [usernameLogged, setUsernameLogged] = useState("");
+  const [userLogged, setUserLogged] = useState(null);
+
+  // const usernameLogged = userLogged?.username;
+  // const userInstrument = userLogged?.instrument;
 
   useEffect(() => {
-    if (!islogged || !usernameLogged) {
+    if (!islogged || !userLogged) {
       console.log("⚠️ User is not logged in. Skipping socket connection.");
       return;
     }
-    console.log("🔵 Emitting user_connected:", usernameLogged);
+    console.log("🔵 Emitting user_connected:", userLogged);
     socket.connect();
-    socket.emit("user_connected", usernameLogged);
+    socket.emit("user_connected", userLogged);
+    //socket.emit("user_connected", { username: usernameLogged, instrument: userInstrument });
     socket.on("disconnect", () => {
       console.log("❌ Disconnected from server");
     });
@@ -37,7 +41,7 @@ function App() {
         socket.disconnect();
       }
     };
-  }, [islogged, usernameLogged]);
+  }, [islogged, userLogged]);
 
 
   return (
@@ -45,11 +49,11 @@ function App() {
       <Router>
         <Routes>
           <Route path='/' element={<Welcome />} />
-          <Route path="/login" element={<Login setIsLogged={setIsLogged} setUsernameLogged={setUsernameLogged} />} />
+          <Route path="/login" element={<Login setIsLogged={setIsLogged} setUserLogged={setUserLogged} />} />
 
-          <Route path='/admin-login' element={<AdminLogin setIsLogged={setIsLogged} setUsernameLogged={setUsernameLogged} />} />
+          <Route path='/admin-login' element={<AdminLogin setIsLogged={setIsLogged} setUserLogged={setUserLogged} />} />
 
-          <Route path="/register" element={<Register setIsLogged={setIsLogged} />} />
+          <Route path="/register" element={<Register setIsLogged={setIsLogged} setUserLogged={setUserLogged} />} />
 
           <Route path="/main" element={islogged ? <MainPage /> : <Navigate to="/login" />} />
 
@@ -57,7 +61,7 @@ function App() {
 
           <Route path="/result" element={<Result />} />
 
-          <Route path="/live" element={<LivePage/>} />
+          <Route path="/live" element={<LivePage />} />
 
         </Routes>
       </Router>

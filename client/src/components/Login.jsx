@@ -8,8 +8,7 @@ import axios from "axios";
 import { AlertTitle } from '@mui/material';
 
 
-export default function Login({ setIsLogged, setUsernameLogged }) {
-
+export default function Login({ setIsLogged, setUserLogged }) {
     const [formData, setFormData] = useState({
         username: '',
         password: ''
@@ -31,9 +30,10 @@ export default function Login({ setIsLogged, setUsernameLogged }) {
         event.preventDefault();
         try {
             const response = await axios.post("http://localhost:3001/users/login", formData);
+            console.log("response",response.data)
             if (response.status === 200) {
                 setIsLogged(true);
-                setUsernameLogged(formData.username)
+                setUserLogged(response.data.user)
                 navigate("/main");
             }
         } catch (error) {

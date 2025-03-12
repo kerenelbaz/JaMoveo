@@ -7,7 +7,7 @@ import Alert from "@mui/material/Alert";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-export default function Register(setIsLogged, setUsernameLogged) {
+export default function Register({ setIsLogged, setUserLogged }) {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         username: "",
@@ -49,7 +49,7 @@ export default function Register(setIsLogged, setUsernameLogged) {
             if (response.status === 200) {
                 setOpenSnackbar({ success: true, error: false });
                 setIsLogged(true)
-                setUsernameLogged(formData.username);
+                setUserLogged(formData);
                 navigate("/main");
             }
             // eslint-disable-next-line no-unused-vars
@@ -71,7 +71,7 @@ export default function Register(setIsLogged, setUsernameLogged) {
                         onChange={handleChange}
                         required
                         fullWidth
-                        style={{marginBottom:'10px'}}
+                        style={{ marginBottom: '10px' }}
                     />
                 </div>
                 <div>
@@ -83,7 +83,7 @@ export default function Register(setIsLogged, setUsernameLogged) {
                         onChange={handleChange}
                         required
                         fullWidth
-                        style={{marginBottom:'10px'}}
+                        style={{ marginBottom: '10px' }}
                     />
                 </div>
                 <div>
@@ -92,7 +92,7 @@ export default function Register(setIsLogged, setUsernameLogged) {
                         getOptionLabel={(option) => option}
                         onChange={handleInstrumentChange}
                         renderInput={(params) => (
-                            <TextField {...params} label="Instrument"  fullWidth />
+                            <TextField {...params} label="Instrument" fullWidth />
                         )}
                     />
                 </div>
@@ -103,13 +103,13 @@ export default function Register(setIsLogged, setUsernameLogged) {
 
             <Snackbar open={openSnackbar.success} autoHideDuration={6000} onClose={handleCloseSnackbar}>
                 <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: "100%" }}>
-                    Registration Successful! 
+                    Registration Successful!
                 </Alert>
             </Snackbar>
 
             <Snackbar open={openSnackbar.error} autoHideDuration={6000} onClose={handleCloseSnackbar}>
                 <Alert onClose={handleCloseSnackbar} severity="error" sx={{ width: "100%" }}>
-                    Registration Failed! 
+                    Registration Failed!
                 </Alert>
             </Snackbar>
         </div>

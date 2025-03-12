@@ -77,20 +77,7 @@ export default function MainPageAdmin() {
             <TextField id="text" label="Search a song" value={searchText} variant="outlined" onChange={(e) => setSearchText(e.target.value)} />
 
             <Button variant="outlined" onClick={handleSearch}>Search</Button>
-            {/* {songFoundDetails ? (
-                songFoundDetails.length > 0 ? (
-                    <div>
-                        <h4>Results:</h4>
-                        <ul>
-                            {songFoundDetails.map((song, index) => (
-                                <li key={index}>{song.songName}</li>
-                            ))}
-                        </ul>
-                    </div>
-                ) : null
-            ) : (
-                <p>No songs found.</p>
-            )} */}
+          
         </div>
 
     )

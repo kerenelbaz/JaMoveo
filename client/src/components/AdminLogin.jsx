@@ -6,7 +6,7 @@ import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import axios from "axios";
 
-export default function AdminLogin({ setIsLogged, setUsernameLogged }) {
+export default function AdminLogin({ setIsLogged, setUserLogged }) {
     const [formData, setFormData] = useState({
         username: '',
         password: ''
@@ -30,7 +30,7 @@ export default function AdminLogin({ setIsLogged, setUsernameLogged }) {
             const response = await axios.post("http://localhost:3001/users/login", formData);
             if (response.status === 200 && formData.username === 'admin') {
                 setIsLogged(true);
-                setUsernameLogged(formData.username)
+                setUserLogged(formData.username)
                 navigate("/main-admin");
             }
         } catch (error) {
