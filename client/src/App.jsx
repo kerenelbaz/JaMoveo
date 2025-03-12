@@ -52,12 +52,9 @@ function App() {
           <Route path="/main" element={islogged ? <MainPage /> : <Navigate to="/login" />} />
 
           <Route path="/main-admin" element={islogged ? <MainPageAdmin /> : <Navigate to="/admin-login" />} />
+          
         </Routes>
       </Router>
-      {/* <div>
-        <h1>Socket.IO cilent</h1>
-      </div>
-      <Register /> */}
     </>
   )
 }

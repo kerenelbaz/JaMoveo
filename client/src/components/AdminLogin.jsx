@@ -70,9 +70,7 @@ export default function AdminLogin({ setIsLogged, setUsernameLogged }) {
                         Login</Button>
                 </div>
             </form>
-            <p>
-                Don't have an account yet? <Link to="/register">Click here to sign-up</Link>
-            </p>
+            
             {loginFailed && (
                 <Snackbar open={loginFailed} autoHideDuration={6000} onClose={() => setLoginFailed(false)}>
                     <Alert severity="error">Incorrect username or password</Alert>
