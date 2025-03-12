@@ -2,12 +2,14 @@ import React from 'react'
 import { useState, useEffect } from 'react';
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-
+import { useNavigate } from "react-router-dom";
 
 export default function MainPageAdmin() {
-    const [songFoundDetails, setSongFoundDetails] = useState("");
+    // const [songFoundDetails, setSongFoundDetails] = useState("");
     const [searchText, setSearchText] = useState("");
     const [songs, setSongs] = useState([]);
+
+    const navigate = useNavigate();
 
     const songsData = import.meta.glob("../songs/*.json") //loading JSON file
 
@@ -54,9 +56,16 @@ export default function MainPageAdmin() {
 
         const foundSongs = songs.filter(song => song.lyrics.includes(searchText.toLocaleLowerCase()));
         if (foundSongs.length > 0) {
-            setSongFoundDetails(foundSongs);
+            // setSongFoundDetails(foundSongs);
+            console.log("123")
+            console.log(foundSongs)
+            navigate("/result", {state:{foundSongs}});
+            
         } else {
-            setSongFoundDetails(null) //didnt find a song match to the text
+            console.log("123")
+            // setSongFoundDetails(null) //didnt find a song match to the text
+            console.log(foundSongs)
+            navigate("/result", { state: { foundSongs: [] } });
         }
     }
 
@@ -68,7 +77,7 @@ export default function MainPageAdmin() {
             <TextField id="text" label="Search a song" value={searchText} variant="outlined" onChange={(e) => setSearchText(e.target.value)} />
 
             <Button variant="outlined" onClick={handleSearch}>Search</Button>
-            {songFoundDetails ? (
+            {/* {songFoundDetails ? (
                 songFoundDetails.length > 0 ? (
                     <div>
                         <h4>Results:</h4>
@@ -81,7 +90,7 @@ export default function MainPageAdmin() {
                 ) : null
             ) : (
                 <p>No songs found.</p>
-            )}
+            )} */}
         </div>
 
     )

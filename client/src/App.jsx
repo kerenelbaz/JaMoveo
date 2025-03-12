@@ -12,6 +12,8 @@ import MainPage from './components/MainPage'
 import MainPageAdmin from './components/MainPageAdmin'
 import AdminLogin from './components/AdminLogin'
 import Welcome from './components/welcome'
+import Result from './components/Result'
+import LivePage from './components/LivePage'
 
 function App() {
   // const [count, setCount] = useState(0)
@@ -52,7 +54,11 @@ function App() {
           <Route path="/main" element={islogged ? <MainPage /> : <Navigate to="/login" />} />
 
           <Route path="/main-admin" element={islogged ? <MainPageAdmin /> : <Navigate to="/admin-login" />} />
-          
+
+          <Route path="/result" element={<Result />} />
+
+          <Route path="/live" element={<LivePage/>} />
+
         </Routes>
       </Router>
     </>
