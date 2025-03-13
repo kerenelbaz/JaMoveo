@@ -16,7 +16,8 @@ async function searchSongs(songName) {
     const searchUrl = `https://www.tab4u.com/resultsSimple?tab=songs&q=${encodeURIComponent(songName)}`;
 
     console.log(`Searching for songs: ${songName}`);
-    await page.goto(searchUrl, { waitUntil: "networkidle2" });
+    // await page.goto(searchUrl, { waitUntil: "networkidle2" });
+    await page.goto(songUrl, { waitUntil: "domcontentloaded" });
 
     let allSongs = [];
     let pageNum = 1;
@@ -39,7 +40,7 @@ async function searchSongs(songName) {
                         title = title.replace(/^\/|\/$/g, "").trim(); // Remove `/` at start or end
                         title = title.replace(/\s+/g, " "); // Replace multiple spaces with a single space
                     }
-        
+
                     return href ? {
                         title: title || "Unknown",
                         artist: artist || "Unknown",
