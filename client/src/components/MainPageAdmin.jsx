@@ -29,7 +29,6 @@ export default function MainPageAdmin() {
                 songName, lyrics: lyricsText, chords: chordsText
             });
         }
-        console.log(songs)
         setSongs(songs)
     }
 
@@ -49,25 +48,34 @@ export default function MainPageAdmin() {
         return { lyricsText, chordsText }; // return tuple of both strings
     };
 
+    // const handleSearch = async () => {
+
+    //     if (!searchText.trim()) return //checks if the text is empty
+
+    //     const foundSongs = songs.filter(song => song.lyrics.includes(searchText.toLocaleLowerCase()));
+    //     if (foundSongs.length > 0) {
+    //         // setSongFoundDetails(foundSongs);
+    //         navigate("/result", {state:{foundSongs}});
+
+    //     } else {
+    //         // setSongFoundDetails(null) //didnt find a song match to the text
+    //         navigate("/result", { state: { foundSongs: [] } });
+    //     }
+    // }
     const handleSearch = async () => {
-        console.log("🔍 Searching for:", searchText);
+        try {
+            const response = await fetch(`http://localhost:3001/songs/scrape-song/${searchText}`);
+            const data = await response.json();
 
-        if (!searchText.trim()) return //checks if the text is empty
-
-        const foundSongs = songs.filter(song => song.lyrics.includes(searchText.toLocaleLowerCase()));
-        if (foundSongs.length > 0) {
-            // setSongFoundDetails(foundSongs);
-            console.log("123")
-            console.log(foundSongs)
-            navigate("/result", {state:{foundSongs}});
-            
-        } else {
-            console.log("123")
-            // setSongFoundDetails(null) //didnt find a song match to the text
-            console.log(foundSongs)
-            navigate("/result", { state: { foundSongs: [] } });
+            if (data.success) {
+                navigate("/live", { state: { song: data.song } });
+            } else {
+                console.error("Song not found");
+            }
+        } catch (error) {
+            console.error("Error fetching song:", error);
         }
-    }
+    };
 
     return (
         <div>MainPageAdmin
@@ -77,7 +85,7 @@ export default function MainPageAdmin() {
             <TextField id="text" label="Search a song" value={searchText} variant="outlined" onChange={(e) => setSearchText(e.target.value)} />
 
             <Button variant="outlined" onClick={handleSearch}>Search</Button>
-          
+
         </div>
 
     )

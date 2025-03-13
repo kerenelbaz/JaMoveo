@@ -27,27 +27,45 @@ mongoose.connect(process.env.MONGO_URI)
 
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
-const users ={}
-const current_song=null;
+const users = {}
+let current_song = null;
 
 io.on("connection", (socket) => {
     console.log(`🔵 user connected: ${socket.id}`);
     socket.on("user_connected", (userData) => {
         users[socket.id] = userData; //saves as {socket.id:{username, instrument } }
         console.log(`👤 ${userData.username} connected with instrument: ${userData.instrument}`);
+        if (current_song) {
+            socket.emit("song_selected", current_song);
+        }
     });
-    if (currentSong) {
-        socket.emit("current_song", currentSong);
-    }
+
     socket.on("get_user_data", () => {
         if (users[socket.id]) {
             socket.emit("user_data", users[socket.id]);
         }
     });
-    socket.on("admin_selected_song", (song)=>{
+
+    socket.on("admin_selected_song", (song) => {
         console.log("🎵 Admin chose a song:", song);
+        current_song=song;
         io.emit("song_selected", song); // broadcast to all connected users
     })
+
+    socket.on("quit_session", () => {
+        current_song = null;
+        io.emit("live_session_quit");
+        
+        
+        // for (const socketId in users) { //cleared users list
+        //     delete users[socketId]
+        //     //remove multiple listener in order to prevent many calls to the server
+        //     socket.off("user_connected");
+        //     socket.off("get_user_data");
+        //     socket.off("admin_selected_song");
+        //     socket.off("quit_session");
+        // }
+    });
 
     socket.on("disconnect", () => {
         console.log(`❌ user disconnected: ${socket.id}`);
