@@ -9,7 +9,9 @@ if (!fs.existsSync(DATA_FOLDER)) {
 }
 
 async function searchSongs(songName) {
-    const browser = await puppeteer.launch({ headless: true });
+    const browser = await puppeteer.launch({
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
     const page = await browser.newPage();
     const searchUrl = `https://www.tab4u.com/resultsSimple?tab=songs&q=${encodeURIComponent(songName)}`;
 
