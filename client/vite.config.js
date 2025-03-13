@@ -6,5 +6,10 @@ export default defineConfig({
   plugins: [react()],
   optimizeDeps: {
     include: ['songs/*.json']
-  }
+  },
+  build: {
+    rollupOptions: {
+      external: ["@mui/material"],
+    },
+  },
 })
