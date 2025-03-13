@@ -62,7 +62,7 @@ async function searchSongs(songName) {
         // Click "Next Page" and wait for navigation
         await Promise.all([
             nextPageButton.click(),
-            page.waitForNavigation({ waitUntil: "networkidle2" })
+            page.waitForNavigation({ waitUntil: "domcontentloaded" })
         ]);
 
         pageNum++;
