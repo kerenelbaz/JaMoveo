@@ -5,6 +5,7 @@ const cors = require("cors")
 const http = require("http");
 const { Server } = require("socket.io");
 const app = require("./app");
+const { fetchSongDetails } = require("./scrapers/tab4uScraper");
 
 app.use(cors());
 
@@ -32,43 +33,65 @@ let current_song = null;
 
 io.on("connection", (socket) => {
     console.log(`🔵 user connected: ${socket.id}`);
+
     socket.on("user_connected", (userData) => {
-        users[socket.id] = userData; //saves as {socket.id:{username, instrument } }
+        users[socket.id] = userData;
         console.log(`👤 ${userData.username} connected with instrument: ${userData.instrument}`);
+
         if (current_song) {
+        console.log("📡 Sending current song to new user:", current_song);
             socket.emit("song_selected", current_song);
         }
     });
 
     socket.on("get_user_data", () => {
         if (users[socket.id]) {
+            
             socket.emit("user_data", users[socket.id]);
         }
     });
 
-    socket.on("admin_selected_song", (song) => {
+    socket.on("admin_selected_song", async (song) => {
         console.log("🎵 Admin chose a song:", song);
-        current_song=song;
-        io.emit("song_selected", song); // broadcast to all connected users
-    })
+    
+        try {
+            // Get full song details before broadcasting
+            const fullSongDetails = await fetchSongDetails(song.link);
+            
+            if (!fullSongDetails) {
+                console.error("❌ Failed to fetch song details.");
+                return;
+            }
+    
+            // Merge full details with existing song data
+            const fullSong = {
+                ...song,
+                lyrics: fullSongDetails.lyrics,
+                chords_with_lyrics: fullSongDetails.chords_with_lyrics
+            };
+    
+            // Save current song
+            current_song = fullSong;
+    
+            // Broadcast full song details to all users
+            io.emit("song_selected", fullSong);
+            console.log("📡 Sent full song details to users.");
+    
+        } catch (error) {
+            console.error("❌ Error fetching song details:", error);
+        }
+    });
 
     socket.on("quit_session", () => {
+        console.log("❌ Admin quit session, clearing song data...");
         current_song = null;
         io.emit("live_session_quit");
-        
-        
-        // for (const socketId in users) { //cleared users list
-        //     delete users[socketId]
-        //     //remove multiple listener in order to prevent many calls to the server
-        //     socket.off("user_connected");
-        //     socket.off("get_user_data");
-        //     socket.off("admin_selected_song");
-        //     socket.off("quit_session");
-        // }
     });
 
     socket.on("disconnect", () => {
         console.log(`❌ user disconnected: ${socket.id}`);
+        delete users[socket.id];
+        console.log("👥 Updated users list:", users);
     });
 });
 

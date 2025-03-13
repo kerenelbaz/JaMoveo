@@ -11,7 +11,6 @@ export default function MainPage() {
 
     useEffect(() => {
         socket.on("song_selected", (song) => {
-            console.log("🎵 Song selected, navigating to live page...");
             navigate("/live", { state: { song } });
         });
         return () => {

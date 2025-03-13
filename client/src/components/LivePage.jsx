@@ -13,7 +13,6 @@ export default function LivePage() {
     const [userData, setUserData] = useState(null);
     const [isScrolling, setIsScrolling] = useState(false);
 
-    console.log("selected song is: ", selectedSong)
 
     useEffect(() => {
         let scrollInterval;
@@ -29,55 +28,25 @@ export default function LivePage() {
         return () => clearInterval(scrollInterval);
     }, [isScrolling]);
 
-    // useEffect(() => {
-    //     socket.emit("get_user_data");
-
-    //     const handleUserData = (data) => {
-    //         setUserData(data);
-    //         console.log("🔹 User data received:", data);
-    //     }
-    //     socket.on("user_data", handleUserData);
-    //     socket.on("song_selected", (newSong) => {
-    //         console.log("🎵 New song received:", newSong);
-    //         setSelectedSong(newSong);
-    //     });
-
-    //     const handleSessionQuit = () => {
-    //         console.log("⚠️ Admin quit the session. Returning to main...");
-    //         if (userData === "admin") {
-    //             navigate("/main-admin");
-    //         } else {
-    //             navigate("/main");
-    //         }
-    //     };
-
-    //     socket.on("user_data", handleUserData);
-    //     socket.on("live_session_quit", handleSessionQuit);
-
-
-    //     return () => {
-    //         console.log("ℹ️ Cleaning up event listeners...");
-    //         socket.off("user_data", handleUserData);
-    //         socket.off("song_selected");
-    //         socket.off("live_session_quit", handleSessionQuit);
-    //     };
-    // }, [userData]);
+   
 
     useEffect(() => {
         socket.emit("get_user_data");
     
         const handleUserData = (data) => {
             setUserData(data);
-            console.log("🔹 User data received:", data);
+            // console.log("🔹 User data received:", data);
         };
     
-        const handleNewSong = (newSong) => {
-            console.log("🎵 New song received from admin:", newSong);
+        socket.on("user_data", handleUserData);
+    
+        socket.on("song_selected", (newSong) => {
+            console.log("🎵 New song received:", newSong);
             setSelectedSong(newSong);
-        };
+        });
     
         const handleSessionQuit = () => {
-            console.log("⚠️ Admin quit the session. Returning to main...");
+            // console.log("⚠️ Admin quit the session. Returning to main...");
             if (userData === "admin") {
                 navigate("/main-admin");
             } else {
@@ -85,23 +54,22 @@ export default function LivePage() {
             }
         };
     
-        socket.on("user_data", handleUserData);
-        socket.on("song_selected", handleNewSong);
         socket.on("live_session_quit", handleSessionQuit);
     
         return () => {
-            console.log("ℹ️ Cleaning up event listeners...");
+            // console.log("ℹ️ Cleaning up event listeners...");
             socket.off("user_data", handleUserData);
-            socket.off("song_selected", handleNewSong);
+            socket.off("song_selected");
             socket.off("live_session_quit", handleSessionQuit);
         };
-    }, []); // <---- Remove `userData` from dependencies
+    }, [userData]);
+
     
     const handleQuit = () => {
-        console.log("🚨 Admin clicked quit! Emitting 'quit_session' event...");
+        // console.log("🚨 Admin clicked quit! Emitting 'quit_session' event...");
 
         if (userData === "admin") {
-            console.log("quit admin")
+            // console.log("quit admin")
             socket.emit("quit_session");
             setSelectedSong(null)
         }
@@ -118,7 +86,7 @@ export default function LivePage() {
         );
     }
 
-    console.log(userData)
+
 
     return (
         <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column" mt={5}>
@@ -132,6 +100,7 @@ export default function LivePage() {
                     </Typography>
 
                     <Box mt={3}>
+                        {/* {console.log(selectedSong)} */}
                         {userData?.instrument?.toLowerCase() === "vocals" ? (
                             <>
                                 <Typography variant="h6" fontWeight="bold">Lyrics:</Typography>

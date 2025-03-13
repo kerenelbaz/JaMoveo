@@ -1,9 +1,10 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
+import { Box, TextField, Button, CircularProgress, Typography, IconButton } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import SearchIcon from '@mui/icons-material/Search';
 import axios from 'axios';
+
 
 export default function MainPageAdmin() {
     // const [songFoundDetails, setSongFoundDetails] = useState("");
@@ -14,6 +15,8 @@ export default function MainPageAdmin() {
     const navigate = useNavigate();
 
     const songsData = import.meta.glob("../songs/*.json") //loading JSON file
+    const [loading, setLoading] = useState(false)
+
 
     useEffect(() => {
         loadSongs();
@@ -50,53 +53,65 @@ export default function MainPageAdmin() {
         return { lyricsText, chordsText }; // return tuple of both strings
     };
 
-    // const handleSearch = async () => {
 
-    //     if (!searchText.trim()) return //checks if the text is empty
-
-    //     const foundSongs = songs.filter(song => song.lyrics.includes(searchText.toLocaleLowerCase()));
-    //     if (foundSongs.length > 0) {
-    //         // setSongFoundDetails(foundSongs);
-    //         navigate("/result", {state:{foundSongs}});
-
-    //     } else {
-    //         // setSongFoundDetails(null) //didnt find a song match to the text
-    //         navigate("/result", { state: { foundSongs: [] } });
-    //     }
-    // }
     const handleSearch = async () => {
         if (!searchText.trim()) return; // Don't search if empty input
-
+        setLoading(true);
         try {
             const response = await axios.get(`http://localhost:3001/songs/search/${searchText}`);
             const { success, songs } = response.data;
 
             if (success && songs.length > 0) {
-                console.log(songs)
-                // Navigate to results page with song options
                 navigate("/result", { state: { songs: songs } });
             } else {
                 console.error("No songs found.");
             }
         } catch (error) {
             console.error("Error fetching songs:", error);
+        }finally{
+            setLoading(false);
         }
     };
 
-    return (
-        <div>
-            <h3>Search for a song:</h3>
-            <TextField
-                id="text"
-                label="Search a song"
-                value={searchText}
-                variant="outlined"
-                onChange={(e) => setSearchText(e.target.value)}
-            />
-            <Button variant="outlined" onClick={handleSearch}>
-                Search
-            </Button>
-        </div>
+    
 
-    )
+    return (
+        <Box
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+            height="100vh"
+            px={2} // Padding for responsiveness
+        >
+            <Box 
+                display="flex"
+                alignItems="center"
+                width="90%"
+                maxWidth={400}
+            >
+                <TextField
+                    id="text"
+                    label="Enter song name"
+                    value={searchText}
+                    variant="outlined"
+                    onChange={(e) => setSearchText(e.target.value)}
+                    sx={{ flex: 1, mr: 1 }} // חיפוש מתרחב עם רווח קטן לכפתור
+                />
+                <Button 
+                    variant="contained" 
+                    onClick={handleSearch} 
+                    disabled={loading}
+                    sx={{ minWidth: 50, height: "56px" }} // גודל אחיד לכפתור כמו השדה
+                >
+                    <SearchIcon />
+                </Button>
+            </Box>
+    
+            {/* יצירת מקום קבוע ל-Loading */}
+            <Box height={40} mt={2} display="flex" justifyContent="center" alignItems="center">
+                {loading && <CircularProgress />}
+            </Box>
+        </Box>
+    );
 }

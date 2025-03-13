@@ -18,19 +18,8 @@ export default function Result() {
   const location = useLocation(); //allows to get the item of the one we sent with nevigate
   const songs = location.state?.songs || []; //found songs from admin-main page
 
-  console.log("Songs received:", songs); // Debugging log
-
-  // const handleSelectSong = (song) => {
-  //   console.log("song is: ", song)
-
-  //   // send the song to the server througt the socket
-  //   console.log("select the song: ",song)
-  //   socket.emit("admin_selected_song", song);
-
-  //   navigate("/live" , {state:{song}});   
-
-  // };
   const handleSelectSong = async (song) => {
+
     try {
       const response = await axios.post("http://localhost:3001/songs/select", {
         songUrl: song.link,
@@ -40,8 +29,9 @@ export default function Result() {
 
       if (response.data.success) {
         const fullSongDetails = response.data.song;
-        console.log("Full song details received:", fullSongDetails);
 
+
+        socket.emit("admin_selected_song", song);
         // Navigate to Live page with full song details
         navigate("/live", { state: { song: fullSongDetails } });
       } else {
