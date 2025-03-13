@@ -36,6 +36,8 @@ router.get("/search/:songName", async (req, res) => {
 });
 
 router.post("/fetch-song", async (req, res) => {
+    console.log("🟡 Received POST data:", req.body);  // בדיקה
+
     const { songUrl, title, artist } = req.body;
 
     if (!songUrl || !title || !artist) {
@@ -50,12 +52,10 @@ router.post("/fetch-song", async (req, res) => {
         }
 
         const songData = { title, artist, ...songDetails };
-
-        fs.writeFileSync(FILE_PATH, JSON.stringify(songData, null, 2));
         res.json({ success: true, song: songData });
 
     } catch (error) {
-        console.error("Error fetching song:", error);
+        console.error("❌ Error fetching song:", error);
         res.status(500).json({ success: false, error: "Failed to fetch song details" });
     }
 });
