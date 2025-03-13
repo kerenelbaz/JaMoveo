@@ -62,7 +62,7 @@ async function searchSongs(songName) {
         // Click "Next Page" and wait for navigation
         await Promise.all([
             nextPageButton.click(),
-            page.waitForNavigation({ waitUntil: "domcontentloaded" })
+            page.waitForNavigation({ waitUntil: "networkidle2" })
         ]);
 
         pageNum++;
@@ -76,7 +76,7 @@ async function searchSongs(songName) {
 async function fetchSongDetails(songUrl) {
     const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
-    await page.goto(songUrl, { waitUntil: "networkidle2" });
+    await page.goto(songUrl, { waitUntil: "domcontentloaded" });
 
     try {
         await page.waitForSelector("#songContentTPL", { timeout: 20000 });
