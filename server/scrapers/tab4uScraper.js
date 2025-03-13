@@ -30,9 +30,15 @@ async function searchSongs(songName) {
         const songs = await page.evaluate(() => {
             return Array.from(document.querySelectorAll("div.pageWrapMic a.ruSongLink.songLinkT"))
                 .map(link => {
-                    const title = link.querySelector(".sNameI19")?.innerText.trim();
-                    const artist = link.querySelector(".aNameI19")?.innerText.trim();
-                    const href = link.getAttribute("href");
+                    let title = link.querySelector(".sNameI19")?.innerText.trim();
+                    let artist = link.querySelector(".aNameI19")?.innerText.trim();
+                    let href = link.getAttribute("href");
+
+                    if (title) {
+                        title = title.replace(/^\/|\/$/g, "").trim(); // Remove `/` at start or end
+                        title = title.replace(/\s+/g, " "); // Replace multiple spaces with a single space
+                    }
+        
 
                     return href ? {
                         title: title || "Unknown",

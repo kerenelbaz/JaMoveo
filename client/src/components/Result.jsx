@@ -6,17 +6,22 @@ import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import Typography from "@mui/material/Typography";
 import socket from '../socket';
+import Grid from "@mui/material/Grid";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import { motion } from "framer-motion";
+import { CardActionArea } from '@mui/material';
 
 export default function Result() {
   const navigate = useNavigate();
   const location = useLocation(); //allows to get the item of the one we sent with nevigate
-  const foundSongs = location.state?.foundSongs || [];
+  const songs = location.state?.songs || []; //found songs from admin-main page
 
+  console.log("Songs received:", songs); // Debugging log
 
   const handleSelectSong = (song) => {
     console.log("song is: ", song)
-    // setSelectedSong(song);
-
+ 
     // send the song to the server througt the socket
     socket.emit("admin_selected_song", song);
 
@@ -25,23 +30,57 @@ export default function Result() {
   };
 
   return (
-    <div>
-        <h3>Search Results</h3>
-        {foundSongs.length > 0 ? (
-            <ul>
-                {foundSongs.map((song, index) => (
-                    <li key={index} onClick={()=>handleSelectSong(song)}
-                    style={{cursor:'pointer', color:'blue'}}>
-                        <strong>{song.songName}</strong> <br />
-                        <em>Preview:</em> {song.lyrics.substring(0, 100)}...
-                    </li>
+    <div style={{ padding: "30px", textAlign: "center" }}>
+        <Typography variant="h4" gutterBottom>
+            Search Results
+        </Typography>
+
+        {songs.length > 0 ? (
+            <Grid container spacing={3} justifyContent="center">
+                {songs.map((song, index) => (
+                    <Grid item xs={12} sm={6} md={4} key={index}>
+                        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                            <Card 
+                                sx={{
+                                    maxWidth: 350,
+                                    margin: "auto",
+                                    borderRadius: "15px",
+                                    boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.2)",
+                                }}
+                            >
+                                <CardActionArea onClick={() => handleSelectSong(song)}>
+                                    <CardContent>
+                                        <Typography 
+                                            variant="h6" 
+                                            color="primary" 
+                                            sx={{ fontWeight: "bold", fontSize: "1.2rem" }}
+                                        >
+                                            {song.title}
+                                        </Typography>
+                                        <Typography 
+                                            variant="subtitle1" 
+                                            color="textSecondary"
+                                            sx={{ fontSize: "1rem", marginTop: "5px" }}
+                                        >
+                                            {song.artist}
+                                        </Typography>
+                                    </CardContent>
+                                </CardActionArea>
+                            </Card>
+                        </motion.div>
+                    </Grid>
                 ))}
-            </ul>
+            </Grid>
         ) : (
-            <p>No songs found.</p>
+            <Typography>No songs found.</Typography>
         )}
 
-        <Button variant="outlined" onClick={() => navigate('/main-admin')}>
+        <Button 
+            variant="contained" 
+            color="primary" 
+            sx={{ marginTop: "20px", borderRadius: "8px", fontSize: "1rem" }} 
+            onClick={() => navigate('/main-admin')}
+        >
             Back to Search
         </Button>
     </div>

@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
+import axios from 'axios';
 
 export default function MainPageAdmin() {
     // const [songFoundDetails, setSongFoundDetails] = useState("");
@@ -63,29 +64,37 @@ export default function MainPageAdmin() {
     //     }
     // }
     const handleSearch = async () => {
-        try {
-            const response = await fetch(`http://localhost:3001/songs/scrape-song/${searchText}`);
-            const data = await response.json();
+        if (!searchText.trim()) return; // Don't search if empty input
 
-            if (data.success) {
-                navigate("/live", { state: { song: data.song } });
+        try {
+            const response = await axios.get(`http://localhost:3001/songs/search/${searchText}`);
+            const { success, songs } = response.data;
+
+            if (success && songs.length > 0) {
+                console.log(songs)
+                // Navigate to results page with song options
+                navigate("/result", { state: { songs: songs } });
             } else {
-                console.error("Song not found");
+                console.error("No songs found.");
             }
         } catch (error) {
-            console.error("Error fetching song:", error);
+            console.error("Error fetching songs:", error);
         }
     };
 
     return (
-        <div>MainPageAdmin
-
+        <div>
             <h3>Search for a song:</h3>
-
-            <TextField id="text" label="Search a song" value={searchText} variant="outlined" onChange={(e) => setSearchText(e.target.value)} />
-
-            <Button variant="outlined" onClick={handleSearch}>Search</Button>
-
+            <TextField
+                id="text"
+                label="Search a song"
+                value={searchText}
+                variant="outlined"
+                onChange={(e) => setSearchText(e.target.value)}
+            />
+            <Button variant="outlined" onClick={handleSearch}>
+                Search
+            </Button>
         </div>
 
     )
