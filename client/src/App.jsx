@@ -8,7 +8,7 @@ import Login from './components/Login'
 import MainPage from './components/MainPage'
 import MainPageAdmin from './components/MainPageAdmin'
 import AdminLogin from './components/AdminLogin'
-import Welcome from './components/welcome'
+import Welcome from './components/Welcome'
 import Result from './components/Result'
 import LivePage from './components/LivePage'
 
