@@ -1,15 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
-import Snackbar from "@mui/material/Snackbar";
-import Alert from "@mui/material/Alert";
-import IconButton from "@mui/material/IconButton";
+import { TextField, Button, Snackbar, Alert, IconButton, Box, Card, CardContent, Typography } from "@mui/material";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import Box from "@mui/material/Box";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import Typography from "@mui/material/Typography";
 import axios from "axios";
 
 export default function AdminLogin({ setIsLogged, setUserLogged }) {
@@ -40,7 +32,7 @@ export default function AdminLogin({ setIsLogged, setUserLogged }) {
     return (
         <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
             <Card sx={{ width: "90%", maxWidth: 400, padding: 3, boxShadow: 3, borderRadius: 3 }}>
-                <CardContent sx={{ position: "relative" }}> 
+                <CardContent sx={{ position: "relative" }}>
 
                     <IconButton onClick={() => navigate("/")} sx={{ position: "absolute", top: 10, left: 10 }}>
                         <ArrowBackIosIcon />

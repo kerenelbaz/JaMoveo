@@ -35,12 +35,12 @@ export default function Login({ setIsLogged, setUserLogged }) {
                 <CardContent sx={{ position: "relative" }}>
 
                     <Box display="flex" justifyContent="center" mb={1}>
-                        <IconButton onClick={() => navigate("/")} sx={{ position: "absolute", top: 25, left: 10 }}>
+                        <IconButton onClick={() => navigate("/")} sx={{ position: "absolute", top: 20, left: 10 }}>
                             <ArrowBackIosIcon />
                         </IconButton>
                     </Box>
 
-                    <Typography variant="h4" align="center" fontWeight="bold" gutterBottom>
+                    <Typography variant="h5" align="center" fontWeight="bold" gutterBottom>
                         Login
                     </Typography>
 

@@ -4,6 +4,8 @@ import { Link, useNavigate } from "react-router-dom";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import axios from "axios";
 import Autocomplete from "@mui/material/Autocomplete";
+
+
 export default function Register({ setIsLogged, setUserLogged }) {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
@@ -61,11 +63,11 @@ export default function Register({ setIsLogged, setUserLogged }) {
             <Card sx={{ width: "90%", maxWidth: 400, p: 3, borderRadius: "12px", boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.15)" }}>
                 <CardContent sx={{ position: "relative" }}>
                     <Box display="flex" justifyContent="center" mb={1}>
-                        <IconButton onClick={() => navigate("/")} sx={{ position: "absolute", top: 25, left: 10 }}>
+                        <IconButton onClick={() => navigate("/")} sx={{ position: "absolute", top: 20, left: 10 }}>
                             <ArrowBackIosIcon />
                         </IconButton>
                     </Box>
-                    <Typography variant="h4" align="center" fontWeight="bold" gutterBottom>
+                    <Typography variant="h5" align="center" fontWeight="bold" gutterBottom>
                         Sign Up
                     </Typography>
                     <form onSubmit={handleSubmit}>

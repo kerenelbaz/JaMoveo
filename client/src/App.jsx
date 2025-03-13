@@ -1,11 +1,8 @@
-// import { useState } from 'react'
-// import reactLogo from './assets/react.svg'
-// import viteLogo from '/vite.svg'
-import socket from './socket'
 import React, { useEffect, useState } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import socket from './socket'
 import './App.css'
-import './components/Register'
+
 import Register from './components/Register'
 import Login from './components/Login'
 import MainPage from './components/MainPage'
