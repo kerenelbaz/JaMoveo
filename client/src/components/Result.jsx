@@ -20,7 +20,7 @@ export default function Result() {
   const handleSelectSong = async (song) => {
 
     try {
-      const response = await axios.post("http://localhost:3001/songs/select", {
+      const response = await axios.post("https://jamoveo-production-6dff.up.railway.app/songs/select", {
         songUrl: song.link,
         title: song.title,
         artist: song.artist

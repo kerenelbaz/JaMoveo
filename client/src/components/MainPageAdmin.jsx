@@ -59,7 +59,7 @@ export default function MainPageAdmin() {
         if (!searchText.trim()) return; // Don't search if empty input
         setLoading(true);
         try {
-            const response = await axios.get(`http://localhost:3001/songs/search/${searchText}`);
+            const response = await axios.get(`https://jamoveo-production-6dff.up.railway.app/songs/search/${searchText}`);
             const { success, songs } = response.data;
 
             if (success && songs.length > 0) {

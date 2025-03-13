@@ -17,7 +17,7 @@ export default function Login({ setIsLogged, setUserLogged }) {
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
-            const response = await axios.post("http://localhost:3001/users/login", formData);
+            const response = await axios.post("https://jamoveo-production-6dff.up.railway.app/users/login", formData);
             if (response.status === 200) {
                 setIsLogged(true);
                 setUserLogged(response.data.user);

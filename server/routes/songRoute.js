@@ -12,21 +12,26 @@ if (!fs.existsSync(DATA_FOLDER)) {
 }
 
 router.get("/search/:songName", async (req, res) => {
+    console.log("🔍 Received request for song:", req.params.songName);
+
     const songName = req.params.songName;
     if (!songName) {
+        console.log("❌ Missing song name");
         return res.status(400).json({ error: "Missing song name" });
     }
 
     try {
         const songs = await searchSongs(songName);
         if (songs.length === 0) {
+            console.log("⚠️ No songs found for:", songName);
             return res.status(404).json({ error: "No songs found" });
         }
 
+        console.log("✅ Sending songs:", songs);
         res.json({ success: true, songs });
     } catch (error) {
-        console.error("Scraping failed:", error);
-        res.status(500).json({ success: false, error: "Failed to fetch search results" });
+        console.error("🔥 ERROR: Scraping failed:", error);
+        res.status(500).json({ success: false, error: error.message });
     }
 });
 

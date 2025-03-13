@@ -44,7 +44,7 @@ export default function Register({ setIsLogged, setUserLogged }) {
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
-            const response = await axios.post("http://localhost:3001/users/sign-up", formData);
+            const response = await axios.post("https://jamoveo-production-6dff.up.railway.app/users/sign-up", formData);
             if (response.status === 200) {
                 setOpenSnackbar({ success: true, error: false });
                 setIsLogged(true)
