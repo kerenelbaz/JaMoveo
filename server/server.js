@@ -6,7 +6,13 @@ const { Server } = require("socket.io");
 const app = require("./app");
 const { fetchSongDetails } = require("./scrapers/tab4uScraper");
 
-app.use(cors());
+const corsOptions = {
+    origin: ["http://localhost:5173", "https://jamoveo-production-311f.up.railway.app"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+};
+app.use(cors(corsOptions));
 
 dotenv.config({ path: "./config.env" }); // Environment variables
 const port = process.env.PORT || 3001;
@@ -19,7 +25,14 @@ mongoose.connect(process.env.MONGO_URI)
     });
 
 const server = http.createServer(app);
-const io = new Server(server, { cors: { origin: "*" } });
+// const io = new Server(server, { cors: { origin: "*" } });
+const io = new Server(server, {
+    cors: {
+        origin: ["http://localhost:5173", "https://jamoveo-production-311f.up.railway.app"],
+        methods: ["GET", "POST"],
+        credentials: true
+    }
+});
 const users = {}
 let current_song = null;
 
@@ -35,17 +48,17 @@ io.on("connection", (socket) => {
 
     socket.on("get_user_data", () => {
         if (users[socket.id]) {
-            
+
             socket.emit("user_data", users[socket.id]);
         }
     });
 
     socket.on("admin_selected_song", async (song) => {
-    
+
         try {
             // Get full song details before broadcasting
             const fullSongDetails = await fetchSongDetails(song.link);
-            
+
             if (!fullSongDetails) {
                 console.error("❌ Failed to fetch song details.");
                 return;
@@ -56,7 +69,7 @@ io.on("connection", (socket) => {
                 lyrics: fullSongDetails.lyrics,
                 chords_with_lyrics: fullSongDetails.chords_with_lyrics
             };
-    
+
             current_song = fullSong;
             io.emit("song_selected", fullSong);
 
@@ -76,6 +89,6 @@ io.on("connection", (socket) => {
     });
 });
 
-server.listen(port,'0.0.0.0', () => {
+server.listen(port, '0.0.0.0', () => {
     console.log(`Server running on port ${port}`)
 })
