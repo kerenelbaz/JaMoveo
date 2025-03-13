@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { TextField, Button, Snackbar, Alert, Card, CardContent, Typography, Box, IconButton } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
-import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import axios from "axios";
 import Autocomplete from "@mui/material/Autocomplete";
 
@@ -64,7 +64,7 @@ export default function Register({ setIsLogged, setUserLogged }) {
                 <CardContent sx={{ position: "relative" }}>
                     <Box display="flex" justifyContent="center" mb={1}>
                         <IconButton onClick={() => navigate("/")} sx={{ position: "absolute", top: 20, left: 10 }}>
-                            <ArrowBackIosIcon />
+                            <ArrowBackIosNewIcon />
                         </IconButton>
                     </Box>
                     <Typography variant="h5" align="center" fontWeight="bold" gutterBottom>

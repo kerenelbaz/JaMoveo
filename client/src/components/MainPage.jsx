@@ -2,10 +2,10 @@
 import React from 'react';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import socket from '../socket';
+import '../styleByMe.css';
 
 export default function MainPage() {
     const navigate = useNavigate();
@@ -31,7 +31,8 @@ export default function MainPage() {
             <Typography variant="h6" gutterBottom>
                 Waiting for the admin to choose a song...
             </Typography>
-            <CircularProgress />
+            {/* <CircularProgress /> */}
+            <div className="spinner"></div>
         </Box>
     );
 }
