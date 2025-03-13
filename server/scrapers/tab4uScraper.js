@@ -74,8 +74,13 @@ async function searchSongs(songName) {
 }
 
 async function fetchSongDetails(songUrl) {
-    const browser = await puppeteer.launch({ headless: true });
+    //const browser = await puppeteer.launch({ headless: true });
+    const browser = await puppeteer.launch({
+        headless: true,
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
     const page = await browser.newPage();
+    //await page.goto(songUrl, { waitUntil: "networkidle2" });
     await page.goto(songUrl, { waitUntil: "domcontentloaded" });
 
     try {
