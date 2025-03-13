@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "postinstall": "npm install @mui/material @mui/icons-material",
-    "start": "vite preview"
+    "start": "vite preview --port $PORT"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
