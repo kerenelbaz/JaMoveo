@@ -6,10 +6,11 @@ export default defineConfig({
   base: "./",
   plugins: [react()],
   server: {
-    port: 3000,
+    port: 5173,
     host: '0.0.0.0'
   },
   build: {
+    outDir: 'dist',
     rollupOptions: {
       external: ["@mui/material", "@mui/icons-material"]
     }
