@@ -7,9 +7,15 @@ export default defineConfig({
   optimizeDeps: {
     include: ['songs/*.json']
   },
+  resolve: {
+    alias: {
+      '@mui/material': '@mui/material/esm/index.js',
+      '@mui/icons-material': '@mui/icons-material/esm/index.js',
+    },
+  },
   build: {
     rollupOptions: {
-      external: ["@mui/material"],
+      external: ['@mui/material', '@mui/icons-material'],
     },
   },
 })
