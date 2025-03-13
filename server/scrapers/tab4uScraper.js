@@ -17,7 +17,7 @@ async function searchSongs(songName) {
 
     console.log(`Searching for songs: ${songName}`);
     // await page.goto(searchUrl, { waitUntil: "networkidle2" });
-    await page.goto(songUrl, { waitUntil: "domcontentloaded" });
+    await page.goto(searchUrl, { waitUntil: "domcontentloaded" });
 
     let allSongs = [];
     let pageNum = 1;
