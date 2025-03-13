@@ -74,17 +74,18 @@ async function searchSongs(songName) {
 }
 
 async function fetchSongDetails(songUrl) {
-    //const browser = await puppeteer.launch({ headless: true });
     const browser = await puppeteer.launch({
         headless: true,
         args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
     const page = await browser.newPage();
-    //await page.goto(songUrl, { waitUntil: "networkidle2" });
-    await page.goto(songUrl, { waitUntil: "domcontentloaded" });
 
     try {
-        await page.waitForSelector("#songContentTPL", { timeout: 20000 });
+        console.log(`🔍 Navigating to: ${songUrl}`);
+        await page.goto(songUrl, { waitUntil: "domcontentloaded", timeout: 60000 });
+
+        console.log("⏳ Waiting for #songContentTPL...");
+        await page.waitForSelector("#songContentTPL", { timeout: 60000 });
 
         const songDetails = await page.evaluate(() => {
             const rows = document.querySelectorAll("#songContentTPL tr");
@@ -99,12 +100,10 @@ async function fetchSongDetails(songUrl) {
                 const chordText = chordTd ? chordTd.innerText.trim() : "";
                 const lyricText = lyricTd ? lyricTd.innerText.trim() : "";
 
-                // Store separate lyrics for singer-only display
                 if (lyricText) {
                     lyricsArray.push(lyricText);
                 }
 
-                // Combine chords and lyrics in a readable format
                 if (chordText || lyricText) {
                     combinedArray.push(`${chordText} ${lyricText}`.trim());
                 }
@@ -116,11 +115,12 @@ async function fetchSongDetails(songUrl) {
             };
         });
 
+        console.log("✅ Song details extracted successfully.");
         await browser.close();
         return songDetails;
     } catch (error) {
+        console.error("❌ Error fetching song details:", error.message);
         await browser.close();
-        console.error("Error fetching song details:", error.message);
         return null;
     }
 }
