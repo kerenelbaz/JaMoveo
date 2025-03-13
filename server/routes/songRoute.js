@@ -62,4 +62,27 @@ router.post("/fetch-song", async (req, res) => {
     }
 });
 
+router.post("/select", async (req, res) => {
+    const { songUrl, title, artist } = req.body;
+
+    if (!songUrl || !title || !artist) {
+        return res.status(400).json({ error: "Missing parameters" });
+    }
+
+    try {
+        console.log(`Fetching song details: ${title} by ${artist}`);
+
+        const songDetails = await fetchSongDetails(songUrl);
+        if (!songDetails) {
+            return res.status(404).json({ error: "Song details not found" });
+        }
+
+        // Send the full song details back
+        return res.json({ success: true, song: { title, artist, ...songDetails } });
+    } catch (error) {
+        console.error("Error fetching song details:", error);
+        return res.status(500).json({ error: "Failed to fetch song details" });
+    }
+});
+
 module.exports = router;

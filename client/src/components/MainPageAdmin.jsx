@@ -8,6 +8,7 @@ import axios from 'axios';
 export default function MainPageAdmin() {
     // const [songFoundDetails, setSongFoundDetails] = useState("");
     const [searchText, setSearchText] = useState("");
+    // eslint-disable-next-line no-unused-vars
     const [songs, setSongs] = useState([]);
 
     const navigate = useNavigate();

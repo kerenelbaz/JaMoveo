@@ -1,7 +1,7 @@
 import React from 'react'
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from "react-router-dom";
-import Button from "@mui/material/Button";
+import { Card, CardContent, Typography, Button, Box } from "@mui/material";
 import socket from '../socket';
 
 export default function LivePage() {
@@ -29,19 +29,53 @@ export default function LivePage() {
         return () => clearInterval(scrollInterval);
     }, [isScrolling]);
 
+    // useEffect(() => {
+    //     socket.emit("get_user_data");
+
+    //     const handleUserData = (data) => {
+    //         setUserData(data);
+    //         console.log("🔹 User data received:", data);
+    //     }
+    //     socket.on("user_data", handleUserData);
+    //     socket.on("song_selected", (newSong) => {
+    //         console.log("🎵 New song received:", newSong);
+    //         setSelectedSong(newSong);
+    //     });
+
+    //     const handleSessionQuit = () => {
+    //         console.log("⚠️ Admin quit the session. Returning to main...");
+    //         if (userData === "admin") {
+    //             navigate("/main-admin");
+    //         } else {
+    //             navigate("/main");
+    //         }
+    //     };
+
+    //     socket.on("user_data", handleUserData);
+    //     socket.on("live_session_quit", handleSessionQuit);
+
+
+    //     return () => {
+    //         console.log("ℹ️ Cleaning up event listeners...");
+    //         socket.off("user_data", handleUserData);
+    //         socket.off("song_selected");
+    //         socket.off("live_session_quit", handleSessionQuit);
+    //     };
+    // }, [userData]);
+
     useEffect(() => {
         socket.emit("get_user_data");
-
+    
         const handleUserData = (data) => {
             setUserData(data);
             console.log("🔹 User data received:", data);
-        }
-        socket.on("user_data", handleUserData);
-        socket.on("song_selected", (newSong) => {
-            console.log("🎵 New song received:", newSong);
+        };
+    
+        const handleNewSong = (newSong) => {
+            console.log("🎵 New song received from admin:", newSong);
             setSelectedSong(newSong);
-        });
-
+        };
+    
         const handleSessionQuit = () => {
             console.log("⚠️ Admin quit the session. Returning to main...");
             if (userData === "admin") {
@@ -50,19 +84,19 @@ export default function LivePage() {
                 navigate("/main");
             }
         };
-
+    
         socket.on("user_data", handleUserData);
+        socket.on("song_selected", handleNewSong);
         socket.on("live_session_quit", handleSessionQuit);
-
-
+    
         return () => {
             console.log("ℹ️ Cleaning up event listeners...");
             socket.off("user_data", handleUserData);
-            socket.off("song_selected");
+            socket.off("song_selected", handleNewSong);
             socket.off("live_session_quit", handleSessionQuit);
         };
-    }, [userData]);
-
+    }, []); // <---- Remove `userData` from dependencies
+    
     const handleQuit = () => {
         console.log("🚨 Admin clicked quit! Emitting 'quit_session' event...");
 
@@ -74,49 +108,59 @@ export default function LivePage() {
     };
 
     if (!selectedSong || !userData) {
-        return <h3>No song selected.</h3>;
+        return (
+            <Box textAlign="center" mt={5}>
+                <Typography variant="h5" color="error">No song selected.</Typography>
+                <Button variant="contained" color="primary" onClick={() => navigate("/main-admin")}>
+                    Back to Search
+                </Button>
+            </Box>
+        );
     }
+
     console.log(userData)
 
     return (
-        <div>
-            <h2>{selectedSong.songName}</h2>
+        <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column" mt={5}>
+            <Card sx={{ width: "80%", maxWidth: 600, p: 2 }}>
+                <CardContent>
+                    <Typography variant="h4" align="center" fontWeight="bold">
+                        {selectedSong.title}
+                    </Typography>
+                    <Typography variant="h6" align="center" color="textSecondary">
+                        {selectedSong.artist}
+                    </Typography>
 
-            {userData && userData.instrument?.toLowerCase() === "vocals" ? (
-                <>
-                    <h3>Lyrics:</h3>
-                    <p>{selectedSong.lyrics}</p>
-                </>
-            ) : (
-                <>
-                    <h3>Chords:</h3>
-                    <p>{selectedSong.chords}</p>
-                </>
-            )}
+                    <Box mt={3}>
+                        {userData?.instrument?.toLowerCase() === "vocals" ? (
+                            <>
+                                <Typography variant="h6" fontWeight="bold">Lyrics:</Typography>
+                                <Typography variant="body1" sx={{ whiteSpace: "pre-wrap" }}>
+                                    {selectedSong.lyrics}
+                                </Typography>
+                            </>
+                        ) : (
+                            <>
+                                <Typography variant="h6" fontWeight="bold">Chords with Lyrics:</Typography>
+                                <Typography variant="body1" sx={{ whiteSpace: "pre-wrap", color: "blue" }}>
+                                    {selectedSong.chords_with_lyrics}
+                                </Typography>
+                            </>
+                        )}
+                    </Box>
 
-            <p style={{ whiteSpace: "pre-wrap" }}>
-                {selectedSong.lyrics}
-            </p>
-            {/* מוסיפה טקסט ריק כדי להאריך את הדף ולגרום לגלילה */}
-            <div style={{ height: "100vh" }}></div>
-
-            <Button
-                variant="contained"
-                onClick={() => setIsScrolling(!isScrolling)}
-            >
-                {isScrolling ? "Stop Scrolling" : "Start Scrolling"}
-            </Button>
-
-            {userData === "admin" && (
-                <Button
-                    variant="contained"
-                    color="error"
-                    onClick={handleQuit}
-                    style={{ marginLeft: "10px" }}
-                >
-                    Quit
-                </Button>
-            )}
-        </div>
-    )
+                    <Box mt={3} textAlign="center">
+                        <Button variant="contained" onClick={() => setIsScrolling(!isScrolling)}>
+                            {isScrolling ? "Stop Scrolling" : "Start Scrolling"}
+                        </Button>
+                        {userData === "admin" && (
+                            <Button variant="contained" color="error" onClick={handleQuit} sx={{ ml: 2 }}>
+                                Quit
+                            </Button>
+                        )}
+                    </Box>
+                </CardContent>
+            </Card>
+        </Box>
+    );
 }

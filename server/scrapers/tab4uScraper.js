@@ -83,24 +83,31 @@ async function fetchSongDetails(songUrl) {
         const songDetails = await page.evaluate(() => {
             const rows = document.querySelectorAll("#songContentTPL tr");
 
-            let lyrics = [];
-            let chordsWithLyrics = [];
+            let lyricsArray = [];
+            let chordsArray = [];
+            let combinedArray = [];
 
             rows.forEach(row => {
                 const chordTd = row.querySelector("td.chords");
                 const lyricTd = row.querySelector("td.song");
 
-                if (chordTd) {
-                    chordsWithLyrics.push(chordTd.innerText.trim());
+                const chordText = chordTd ? chordTd.innerText.trim() : "";
+                const lyricText = lyricTd ? lyricTd.innerText.trim() : "";
+
+                // Store separate lyrics for singer-only display
+                if (lyricText) {
+                    lyricsArray.push(lyricText);
                 }
-                if (lyricTd) {
-                    lyrics.push(lyricTd.innerText.trim());
+
+                // Combine chords and lyrics in a readable format
+                if (chordText || lyricText) {
+                    combinedArray.push(`${chordText} ${lyricText}`.trim());
                 }
             });
 
             return {
-                lyrics: lyrics.join("\n") || "No lyrics found.",
-                chords_with_lyrics: chordsWithLyrics.join("\n") || "No chords found."
+                lyrics: lyricsArray.join("\n") || "No lyrics found.",
+                chords_with_lyrics: combinedArray.join("\n") || "No chords found."
             };
         });
 
