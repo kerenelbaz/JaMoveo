@@ -3,7 +3,6 @@ const fs = require("fs");
 const path = require("path");
 
 const DATA_FOLDER = path.join(__dirname, "data");
-const FILE_PATH = path.join(DATA_FOLDER, "selected_song.json");
 
 if (!fs.existsSync(DATA_FOLDER)) {
     fs.mkdirSync(DATA_FOLDER, { recursive: true });
@@ -39,7 +38,6 @@ async function searchSongs(songName) {
                         title = title.replace(/\s+/g, " "); // Replace multiple spaces with a single space
                     }
         
-
                     return href ? {
                         title: title || "Unknown",
                         artist: artist || "Unknown",
@@ -84,7 +82,6 @@ async function fetchSongDetails(songUrl) {
             const rows = document.querySelectorAll("#songContentTPL tr");
 
             let lyricsArray = [];
-            let chordsArray = [];
             let combinedArray = [];
 
             rows.forEach(row => {

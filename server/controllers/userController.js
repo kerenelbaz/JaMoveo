@@ -25,7 +25,6 @@ exports.signUp = async (req, res) => {
                     username, password: hashedPassword, instrument
                 });
                 newUser.save().then((result) => {
-                    console.log(result);
                     res.status(200).json({
                         message: "User created successfully"
                     });

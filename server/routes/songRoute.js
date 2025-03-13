@@ -11,7 +11,6 @@ if (!fs.existsSync(DATA_FOLDER)) {
     fs.mkdirSync(DATA_FOLDER, { recursive: true });
 }
 
-// 🟢 API: Get song search results
 router.get("/search/:songName", async (req, res) => {
     const songName = req.params.songName;
     if (!songName) {
@@ -19,9 +18,7 @@ router.get("/search/:songName", async (req, res) => {
     }
 
     try {
-        console.log(`Searching for song: ${songName}`);
         const songs = await searchSongs(songName);
-
         if (songs.length === 0) {
             return res.status(404).json({ error: "No songs found" });
         }
@@ -33,7 +30,6 @@ router.get("/search/:songName", async (req, res) => {
     }
 });
 
-// 🟢 API: Fetch song details by URL and save JSON
 router.post("/fetch-song", async (req, res) => {
     const { songUrl, title, artist } = req.body;
 
@@ -42,7 +38,6 @@ router.post("/fetch-song", async (req, res) => {
     }
 
     try {
-        console.log(`Fetching details for: ${title} - ${artist}`);
         const songDetails = await fetchSongDetails(songUrl);
 
         if (!songDetails) {
@@ -51,11 +46,9 @@ router.post("/fetch-song", async (req, res) => {
 
         const songData = { title, artist, ...songDetails };
 
-        // Save to JSON
         fs.writeFileSync(FILE_PATH, JSON.stringify(songData, null, 2));
-        console.log(`✅ File saved: ${FILE_PATH}`);
-
         res.json({ success: true, song: songData });
+
     } catch (error) {
         console.error("Error fetching song:", error);
         res.status(500).json({ success: false, error: "Failed to fetch song details" });
@@ -70,8 +63,6 @@ router.post("/select", async (req, res) => {
     }
 
     try {
-        console.log(`Fetching song details: ${title} by ${artist}`);
-
         const songDetails = await fetchSongDetails(songUrl);
         if (!songDetails) {
             return res.status(404).json({ error: "Song details not found" });
@@ -79,6 +70,7 @@ router.post("/select", async (req, res) => {
 
         // Send the full song details back
         return res.json({ success: true, song: { title, artist, ...songDetails } });
+
     } catch (error) {
         console.error("Error fetching song details:", error);
         return res.status(500).json({ error: "Failed to fetch song details" });
