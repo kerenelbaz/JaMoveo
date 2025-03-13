@@ -1,10 +1,9 @@
+/* eslint-disable no-unused-vars */
 import React from 'react'
 import { useNavigate, useLocation } from "react-router-dom";
 import Button from "@mui/material/Button";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemText from "@mui/material/ListItemText";
-import Typography from "@mui/material/Typography";
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import { Box, IconButton, Typography } from "@mui/material";
 import socket from '../socket';
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
@@ -43,22 +42,42 @@ export default function Result() {
   };
 
   return (
-    <div style={{ padding: "30px", textAlign: "center" }}>
-      <Typography variant="h4" gutterBottom>
-        Search Results
-      </Typography>
+    <div style={{ padding: "20px" }}>
 
+      {/* Title & Back Button */}
+      <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
+
+        <IconButton
+          onClick={() => navigate('/main-admin')}
+          sx={{
+
+            color: "black",  // Icon color
+            backgroundColor: "transparent", // No background
+            "&:hover": { backgroundColor: "rgba(0, 0, 0, 0.05)" } // Light hover effect
+          }}
+        >
+          <ArrowBackIosIcon />
+        </IconButton>
+
+        <Typography variant="h5" fontWeight="bold" sx={{ flexGrow: 1, textAlign: "center" }}>
+          Pick a song
+        </Typography>
+
+      </Box>
+
+      {/* Song List */}
       {songs.length > 0 ? (
-        <Grid container spacing={3} justifyContent="center">
+        <Grid container spacing={2} justifyContent="center" marginTop="0.5rem">
           {songs.map((song, index) => (
-            <Grid item xs={12} sm={6} md={4} key={index}>
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Grid item xs={6} sm={4} md={3} key={index}>
+              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                 <Card
                   sx={{
-                    maxWidth: 350,
+                    width: "100%",
+                    maxWidth: 240,
                     margin: "auto",
-                    borderRadius: "15px",
-                    boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.2)",
+                    borderRadius: "12px",
+                    boxShadow: "0px 3px 10px rgba(0, 0, 0, 0.15)",
                   }}
                 >
                   <CardActionArea onClick={() => handleSelectSong(song)}>
@@ -66,14 +85,14 @@ export default function Result() {
                       <Typography
                         variant="h6"
                         color="primary"
-                        sx={{ fontWeight: "bold", fontSize: "1.2rem" }}
+                        sx={{ fontWeight: "bold", fontSize: "1rem" }}
                       >
                         {song.title}
                       </Typography>
                       <Typography
-                        variant="subtitle1"
+                        variant="subtitle2"
                         color="textSecondary"
-                        sx={{ fontSize: "1rem", marginTop: "5px" }}
+                        sx={{ fontSize: "0.8rem", marginTop: "5px" }}
                       >
                         {song.artist}
                       </Typography>
@@ -87,15 +106,6 @@ export default function Result() {
       ) : (
         <Typography>No songs found.</Typography>
       )}
-
-      <Button
-        variant="contained"
-        color="primary"
-        sx={{ marginTop: "20px", borderRadius: "8px", fontSize: "1rem" }}
-        onClick={() => navigate('/main-admin')}
-      >
-        Back to Search
-      </Button>
     </div>
   );
 }

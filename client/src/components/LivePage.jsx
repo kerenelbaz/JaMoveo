@@ -1,17 +1,28 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react'
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from "react-router-dom";
 import { Card, CardContent, Typography, Button, Box } from "@mui/material";
+import IconButton from "@mui/material/IconButton";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import PauseIcon from "@mui/icons-material/Pause";
+import BedtimeIcon from '@mui/icons-material/Bedtime';
+import LightModeIcon from '@mui/icons-material/LightMode';
+
 import socket from '../socket';
 
 export default function LivePage() {
     const location = useLocation();
     const navigate = useNavigate();
-    //const selectedSong = location.state?.song;
     const [selectedSong, setSelectedSong] = useState(location.state?.song || null);
-
     const [userData, setUserData] = useState(null);
     const [isScrolling, setIsScrolling] = useState(false);
+
+    const [darkMode, setDarkMode] = useState(false); 
+
+    const toggleTheme = () => {
+        setDarkMode(!darkMode);
+    };
 
 
     useEffect(() => {
@@ -20,7 +31,7 @@ export default function LivePage() {
         if (isScrolling) {
             scrollInterval = setInterval(() => {
                 window.scrollBy({ top: 1, behavior: "smooth" });
-            }, 200);
+            }, 100);
         } else {
             clearInterval(scrollInterval);
         }
@@ -28,48 +39,40 @@ export default function LivePage() {
         return () => clearInterval(scrollInterval);
     }, [isScrolling]);
 
-   
+
 
     useEffect(() => {
         socket.emit("get_user_data");
-    
+
         const handleUserData = (data) => {
             setUserData(data);
-            // console.log("🔹 User data received:", data);
         };
-    
+
         socket.on("user_data", handleUserData);
-    
         socket.on("song_selected", (newSong) => {
-            console.log("🎵 New song received:", newSong);
             setSelectedSong(newSong);
         });
-    
+
         const handleSessionQuit = () => {
-            // console.log("⚠️ Admin quit the session. Returning to main...");
             if (userData === "admin") {
                 navigate("/main-admin");
             } else {
                 navigate("/main");
             }
         };
-    
+
         socket.on("live_session_quit", handleSessionQuit);
-    
+
         return () => {
-            // console.log("ℹ️ Cleaning up event listeners...");
             socket.off("user_data", handleUserData);
             socket.off("song_selected");
             socket.off("live_session_quit", handleSessionQuit);
         };
     }, [userData]);
 
-    
-    const handleQuit = () => {
-        // console.log("🚨 Admin clicked quit! Emitting 'quit_session' event...");
 
+    const handleQuit = () => {
         if (userData === "admin") {
-            // console.log("quit admin")
             socket.emit("quit_session");
             setSelectedSong(null)
         }
@@ -89,47 +92,111 @@ export default function LivePage() {
 
 
     return (
-        <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column" mt={5}>
-            <Card sx={{ width: "80%", maxWidth: 600, p: 2 }}>
-                <CardContent>
-                    <Typography variant="h4" align="center" fontWeight="bold">
-                        {selectedSong.title}
-                    </Typography>
-                    <Typography variant="h6" align="center" color="textSecondary">
-                        {selectedSong.artist}
-                    </Typography>
-
-                    <Box mt={3}>
-                        {/* {console.log(selectedSong)} */}
-                        {userData?.instrument?.toLowerCase() === "vocals" ? (
-                            <>
-                                <Typography variant="h6" fontWeight="bold">Lyrics:</Typography>
-                                <Typography variant="body1" sx={{ whiteSpace: "pre-wrap" }}>
-                                    {selectedSong.lyrics}
-                                </Typography>
-                            </>
-                        ) : (
-                            <>
-                                <Typography variant="h6" fontWeight="bold">Chords with Lyrics:</Typography>
-                                <Typography variant="body1" sx={{ whiteSpace: "pre-wrap", color: "blue" }}>
-                                    {selectedSong.chords_with_lyrics}
-                                </Typography>
-                            </>
-                        )}
-                    </Box>
-
-                    <Box mt={3} textAlign="center">
-                        <Button variant="contained" onClick={() => setIsScrolling(!isScrolling)}>
-                            {isScrolling ? "Stop Scrolling" : "Start Scrolling"}
+        <Card
+            sx={{
+                width: "90%",
+                backgroundColor: darkMode ? "#213547" : "#F5F5F5", 
+                color: darkMode ? "#ffffff" : "#000000", 
+                maxWidth: 600,
+                margin: "auto",
+                mt: 3,
+                p: 2,
+                borderRadius: "12px",
+                boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.15)",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between"
+            }}
+        >
+            <CardContent sx={{ flexGrow: 1, position: "relative" }}>
+    
+                {/* Control Buttons */}
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
+    
+                    {/* Left side: Play/Pause & Theme Toggle */}
+                    <div style={{ display: "flex", gap: "10px" }}>
+                        {/* Play/Pause Button */}
+                        <IconButton
+                            onClick={() => setIsScrolling(!isScrolling)}
+                            sx={{
+                                color: darkMode ? "#FFFFFF" : "#213547",
+                                borderRadius: "50%",
+                                width: "40px",
+                                height: "40px"
+                            }}
+                        >
+                            {isScrolling ? <PauseIcon fontSize="large" /> : <PlayArrowIcon fontSize="large" />}
+                        </IconButton>
+    
+                        {/* Theme Toggle Button */}
+                        <IconButton
+                            onClick={toggleTheme}
+                            sx={{
+                                color: darkMode ? "#FFFFFF" : "#000000",
+                                borderRadius: "50%",
+                                width: "40px",
+                                height: "40px"
+                            }}
+                        >
+                            {darkMode ? <LightModeIcon fontSize="medium" /> : <BedtimeIcon fontSize="medium" />}
+                        </IconButton>
+                    </div>
+    
+                    {/* Right side: Quit Button */}
+                    {userData === "admin" && (
+                        <Button
+                            variant="outlined"
+                            color="error"
+                            onClick={handleQuit}
+                            sx={{ borderRadius: "8px", minWidth: "50px" }}
+                        >
+                            Quit
                         </Button>
-                        {userData === "admin" && (
-                            <Button variant="contained" color="error" onClick={handleQuit} sx={{ ml: 2 }}>
-                                Quit
-                            </Button>
-                        )}
-                    </Box>
-                </CardContent>
-            </Card>
-        </Box>
+                    )}
+                </div>
+    
+                {/* Song Title & Artist */}
+                <Typography variant="h4" align="center" fontWeight="bold">
+                    {selectedSong.title}
+                </Typography>
+                <Typography variant="h5" align="center" color={darkMode ? "#FFFFFF" : "black"} mb={2}>
+                    {selectedSong.artist}
+                </Typography>
+    
+                {/* Lyrics / Chords Section */}
+                <div style={{ overflowY: "auto", flexGrow: 1 }}>
+                    {userData?.instrument?.toLowerCase() === "vocals" ? (
+                        <>
+                            <Typography
+                                variant="body1"
+                                sx={{
+                                    whiteSpace: "pre-wrap",
+                                    lineHeight: 1.8,
+                                    fontSize: "1rem"
+                                }}
+                            >
+                                {selectedSong.lyrics}
+                            </Typography>
+                        </>
+                    ) : (
+                        <>
+                            <Typography
+                                variant="body1"
+                                sx={{
+                                    whiteSpace: "pre-wrap",
+                                    color: darkMode ? "#FFFFFF" : "black",
+                                    lineHeight: 2,
+                                    fontSize: "1.2rem",
+                                    fontWeight: "20%"
+                                }}
+                            >
+                                {selectedSong.chords_with_lyrics}
+                            </Typography>
+                        </>
+                    )}
+                </div>
+    
+            </CardContent>
+        </Card>
     );
 }

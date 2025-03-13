@@ -1,28 +1,26 @@
-import React, { useState } from 'react'
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
+import IconButton from "@mui/material/IconButton";
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import Box from "@mui/material/Box";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Typography from "@mui/material/Typography";
 import axios from "axios";
 
 export default function AdminLogin({ setIsLogged, setUserLogged }) {
-    const [formData, setFormData] = useState({
-        username: '',
-        password: ''
-    })
-
+    const [formData, setFormData] = useState({ username: '', password: '' });
     const [loginFailed, setLoginFailed] = useState(false);
     const navigate = useNavigate();
 
     const handleChange = (e) => {
-
         const { name, value } = e.target;
-        setFormData(prevState => ({
-            ...prevState,
-            [name]: value
-        }));
-    }
+        setFormData(prevState => ({ ...prevState, [name]: value }));
+    };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -30,7 +28,7 @@ export default function AdminLogin({ setIsLogged, setUserLogged }) {
             const response = await axios.post("http://localhost:3001/users/login", formData);
             if (response.status === 200 && formData.username === 'admin') {
                 setIsLogged(true);
-                setUserLogged(formData.username)
+                setUserLogged(formData.username);
                 navigate("/main-admin");
             }
         } catch (error) {
@@ -40,11 +38,19 @@ export default function AdminLogin({ setIsLogged, setUserLogged }) {
     };
 
     return (
-        <div>Admin Login
+        <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+            <Card sx={{ width: "90%", maxWidth: 400, padding: 3, boxShadow: 3, borderRadius: 3 }}>
+                <CardContent sx={{ position: "relative" }}> 
 
-            <form>
-                <div>
-                    <div>
+                    <IconButton onClick={() => navigate("/")} sx={{ position: "absolute", top: 10, left: 10 }}>
+                        <ArrowBackIosIcon />
+                    </IconButton>
+
+                    <Typography variant="h5" align="center" fontWeight="bold" gutterBottom>
+                        Admin Login
+                    </Typography>
+
+                    <form onSubmit={handleSubmit}>
                         <TextField
                             label="Username"
                             name="username"
@@ -52,30 +58,30 @@ export default function AdminLogin({ setIsLogged, setUserLogged }) {
                             onChange={handleChange}
                             required
                             fullWidth
-                            style={{ marginBottom: '10px' }}
+                            sx={{ marginBottom: 2 }}
                         />
-                    </div>
-                    <div>
                         <TextField
                             label="Password"
                             name="password"
+                            type="password"
                             value={formData.password}
                             onChange={handleChange}
                             required
                             fullWidth
-                            style={{ marginBottom: '10px' }}
+                            sx={{ marginBottom: 2 }}
                         />
-                    </div>
-                    <Button type='submit' variant='contained' onClick={handleSubmit}>
-                        Login</Button>
-                </div>
-            </form>
-            
+                        <Button type="submit" variant="contained" fullWidth>
+                            Login
+                        </Button>
+                    </form>
+                </CardContent>
+            </Card>
+
             {loginFailed && (
                 <Snackbar open={loginFailed} autoHideDuration={6000} onClose={() => setLoginFailed(false)}>
                     <Alert severity="error">Incorrect username or password</Alert>
                 </Snackbar>
             )}
-        </div>
-    )
+        </Box>
+    );
 }
