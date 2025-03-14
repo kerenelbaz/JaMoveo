@@ -55,7 +55,7 @@ export default function Result() {
                     sx={{
 
                         color: "black",  // Icon color
-                        backgroundColor: "transparent", // No background
+                        backgroundColor: "transparent", 
                         "&:hover": { backgroundColor: "rgba(0, 0, 0, 0.05)" } // Light hover effect
                     }}
                 >
@@ -63,7 +63,7 @@ export default function Result() {
                 </IconButton>
 
                 <Typography variant="h5" fontWeight="bold" sx={{ flexGrow: 1, textAlign: "center" }}>
-                    Pick a song
+                    Pick a song to play
                 </Typography>
 
             </Box>

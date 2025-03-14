@@ -82,41 +82,48 @@ export default function MainPageAdmin() {
 
 
     return (
-        <Box
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-            justifyContent="center"
-            height="100vh"
-            px={2}
-        >
+        <>
+
+
             <Box
                 display="flex"
+                flexDirection="column"
                 alignItems="center"
-                width="90%"
-                maxWidth={400}
+                justifyContent="center"
+                height="100vh"
+                px={2}
             >
-                <TextField
-                    id="text"
-                    label="Enter song name"
-                    value={searchText}
-                    variant="outlined"
-                    onChange={(e) => setSearchText(e.target.value)}
-                    sx={{ flex: 1, mr: 1 }}
-                />
-                <Button
-                    variant="contained"
-                    onClick={handleSearch}
-                    disabled={loading}
-                    sx={{ minWidth: 50, height: "56px" }}
-                >
-                    <SearchIcon />
-                </Button>
-            </Box>
 
-            <Box height={40} mt={2} display="flex" justifyContent="center" alignItems="center">
-                {loading && <CircularProgress />}
-            </Box>
-        </Box>
+                <Typography variant="h6" align="center" fontWeight="bold" gutterBottom>
+                    search for a song to start the rehearsal
+                </Typography><br />
+                <Box
+                    display="flex"
+                    alignItems="center"
+                    width="90%"
+                    maxWidth={400}
+                >
+                    <TextField
+                        id="text"
+                        label="Enter song name"
+                        value={searchText}
+                        variant="outlined"
+                        onChange={(e) => setSearchText(e.target.value)}
+                        sx={{ flex: 1, mr: 1 }}
+                    />
+                    <Button
+                        variant="contained"
+                        onClick={handleSearch}
+                        disabled={loading}
+                        sx={{ minWidth: 50, height: "56px" }}
+                    >
+                        <SearchIcon />
+                    </Button>
+                </Box>
+
+                <Box height={40} mt={2} display="flex" justifyContent="center" alignItems="center">
+                    {loading && <CircularProgress />}
+                </Box>
+            </Box></>
     );
 }

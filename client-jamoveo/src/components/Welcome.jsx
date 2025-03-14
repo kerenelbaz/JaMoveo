@@ -8,7 +8,7 @@ export default function Welcome() {
     return (
         <div>
             <h2>Welcome to JaMoveo!</h2>
-            <h3>Click to sign in as:</h3>
+            <h3>Click to sign in the rehearsal as:</h3>
             <Button onClick={() => navigate("/login")}>User</Button>
             <Button onClick={() => navigate("/admin-login")}>Admin</Button>
         </div>
