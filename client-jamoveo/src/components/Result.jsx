@@ -48,7 +48,6 @@ export default function Result() {
     return (
         <div style={{ padding: "20px" }}>
 
-            {/* Title & Back Button */}
             <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
 
                 <IconButton
