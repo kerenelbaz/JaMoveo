@@ -12,72 +12,73 @@ function delay(ms) {
 }
 
 async function searchSongs(songName) {
-    await delay(5000);
     const browser = await puppeteer.launch({
         args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
     const page = await browser.newPage();
-    
-    try {
-        const searchUrl = `https://www.tab4u.com/resultsSimple?tab=songs&q=${encodeURIComponent(songName)}`;
-        console.log(`Searching for songs: ${songName}`);
-        
-        await page.goto(searchUrl, { waitUntil: "networkidle2", timeout: 60000 });
+    const searchUrl = `https://www.tab4u.com/resultsSimple?tab=songs&q=${encodeURIComponent(songName)}`;
 
-        let allSongs = [];
-        let pageNum = 1;
+    console.log(`Searching for songs: ${songName}`);
+    await page.goto(searchUrl, { waitUntil: "domcontentloaded" });
 
-        while (true) {
-            console.log(`Extracting results from page ${pageNum}...`);
-            await page.waitForSelector("div.pageWrapMic", { timeout: 20000 });
+    let allSongs = [];
+    let pageNum = 1;
+    const MAX_RESULTS = 60;
 
-            const songs = await page.evaluate(() => {
-                return Array.from(document.querySelectorAll("div.pageWrapMic a.ruSongLink.songLinkT"))
-                    .map(link => {
-                        let title = link.querySelector(".sNameI19")?.innerText.trim();
-                        let artist = link.querySelector(".aNameI19")?.innerText.trim();
-                        let href = link.getAttribute("href");
+    while (allSongs.length < MAX_RESULTS) { // As long as didn't get to the limit
+        console.log(`Extracting results from page ${pageNum}...`);
 
-                        if (title) {
-                            title = title.replace(/^\/|\/$/g, "").trim();
-                            title = title.replace(/\s+/g, " ");
-                        }
+        await page.waitForSelector("div.pageWrapMic", { timeout: 20000 });
 
-                        return href ? {
-                            title: title || "Unknown",
-                            artist: artist || "Unknown",
-                            link: `https://www.tab4u.com/${href}`
-                        } : null;
-                    })
-                    .filter(song => song !== null);
-            });
+        const songs = await page.evaluate(() => {
+            return Array.from(document.querySelectorAll("div.pageWrapMic a.ruSongLink.songLinkT"))
+                .map(link => {
+                    let title = link.querySelector(".sNameI19")?.innerText.trim();
+                    let artist = link.querySelector(".aNameI19")?.innerText.trim();
+                    let href = link.getAttribute("href");
 
-            allSongs.push(...songs);
+                    if (title) {
+                        title = title.replace(/^\/|\/$/g, "").trim();
+                        title = title.replace(/\s+/g, " ");
+                    }
 
-            const nextPageButton = await page.$("a.nextPre.h");
-            if (!nextPageButton) {
-                console.log("No more pages.");
-                break;
-            }
+                    return href ? {
+                        title: title || "Unknown",
+                        artist: artist || "Unknown",
+                        link: `https://www.tab4u.com/${href}`
+                    } : null;
+                })
+                .filter(song => song !== null);
+        });
 
-            await Promise.all([
-                nextPageButton.click(),
-                page.waitForNavigation({ waitUntil: "networkidle2" })
-            ]);
+        // If there is too many songs - limit to MAX_RESULT
+        const remainingSlots = MAX_RESULTS - allSongs.length;
+        allSongs.push(...songs.slice(0, remainingSlots));
 
-            pageNum++;
+        // If allSongs got to limit - will not move to the next page
+        if (allSongs.length >= MAX_RESULTS) {
+            console.log(`Reached limit of ${MAX_RESULTS} songs.`);
+            break;
         }
 
-        console.log(`Total results found: ${allSongs.length}`);
-        return allSongs;
+        // Checking next pages
+        const nextPageButton = await page.$("a.nextPre.h");
+        if (!nextPageButton) {
+            console.log("No more pages.");
+            break;
+        }
 
-    } catch (error) {
-        console.error("❌ ERROR in searchSongs:", error.message);
-        return [];
+        await Promise.all([
+            nextPageButton.click(),
+            page.waitForNavigation({ waitUntil: "networkidle2" })
+        ]);
 
-    } finally {
-        await browser.close(); // **💡 סוגר את Puppeteer בכל מצב!**
+        pageNum++;
     }
+
+    await browser.close();
+    console.log(`✅ Found ${allSongs.length} songs.`);
+    return allSongs;
 }
 
 async function fetchSongDetails(songUrl) {
