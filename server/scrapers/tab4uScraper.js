@@ -4,13 +4,26 @@ const path = require("path");
 
 const DATA_FOLDER = path.join(__dirname, "data");
 
+// Ensure data folder exists
 if (!fs.existsSync(DATA_FOLDER)) {
     fs.mkdirSync(DATA_FOLDER, { recursive: true });
 }
+
+/**
+ * Delays the execution for a specified amount of milliseconds.
+ * @param {number} ms - The delay duration in milliseconds.
+ * @returns {Promise<void>}
+ */
 function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+/**
+ * Searches for songs on the Tab4U website based on a given song name.
+ * It retrieves up to a maximum of 60 search results by navigating through multiple pages.
+ * @param {string} songName - The name of the song to search for.
+ * @returns {Promise<Array<{title: string, artist: string, link: string}>>} - An array of song objects.
+ */
 async function searchSongs(songName) {
     await delay(5000);
     const browser = await puppeteer.launch({
@@ -20,7 +33,6 @@ async function searchSongs(songName) {
 
     try {
         const searchUrl = `https://www.tab4u.com/resultsSimple?tab=songs&q=${encodeURIComponent(songName)}`;
-        console.log(`Searching for songs: ${songName}`);
 
         await page.goto(searchUrl, { waitUntil: "networkidle2", timeout: 60000 });
 
@@ -28,9 +40,8 @@ async function searchSongs(songName) {
         let pageNum = 1;
         const MAX_RESULTS = 60;
 
-        // As long allSongs didn't got the limit
+        // Continue fetching results until the limit is reached
         while (allSongs.length < MAX_RESULTS) {
-            // console.log(`Extracting results from page ${pageNum}...`);
             await page.waitForSelector("div.pageWrapMic", { timeout: 20000 });
 
             const songs = await page.evaluate(() => {
@@ -57,16 +68,13 @@ async function searchSongs(songName) {
             const remainingSlots = MAX_RESULTS - allSongs.length;
             allSongs.push(...songs.slice(0, remainingSlots));
 
-            //allSongs.push(...songs);
-
             if (allSongs.length >= MAX_RESULTS) {
                 console.log(`Reached limit of ${MAX_RESULTS} songs.`);
                 break;
             }
 
             const nextPageButton = await page.$("a.nextPre.h");
-            if (!nextPageButton) {
-                console.log("No more pages.");
+            if (!nextPageButton) { // No more pages
                 break;
             }
 
@@ -78,18 +86,23 @@ async function searchSongs(songName) {
             pageNum++;
         }
         await browser.close();
-        console.log(`Total results found: ${allSongs.length}`);
         return allSongs;
 
     } catch (error) {
-        console.error("❌ ERROR in searchSongs:", error.message);
+        console.error("ERROR in searchSongs:", error.message);
         return [];
 
     } finally {
-        await browser.close(); 
+        await browser.close();
     }
 }
 
+/**
+ * Fetches detailed song information (lyrics and chords) from a given song URL.
+ * @param {string} songUrl - The URL of the song to fetch details from.
+ * @returns {
+ * Promise<{lyrics: string, chords_with_lyrics: string} || null>} - An object containing lyrics and chords, or null if an error occurs.
+ */
 async function fetchSongDetails(songUrl) {
     const browser = await puppeteer.launch({
         headless: true,
@@ -98,10 +111,8 @@ async function fetchSongDetails(songUrl) {
     const page = await browser.newPage();
 
     try {
-        console.log(`🔍 Navigating to: ${songUrl}`);
         await page.goto(songUrl, { waitUntil: "domcontentloaded", timeout: 60000 });
 
-        console.log("⏳ Waiting for #songContentTPL...");
         await page.waitForSelector("#songContentTPL", { timeout: 60000 });
 
         const songDetails = await page.evaluate(() => {
@@ -132,11 +143,10 @@ async function fetchSongDetails(songUrl) {
             };
         });
 
-        console.log("✅ Song details extracted successfully.");
         await browser.close();
         return songDetails;
     } catch (error) {
-        console.error("❌ Error fetching song details:", error.message);
+        console.error("Error fetching song details:", error.message);
         await browser.close();
         return null;
     }
