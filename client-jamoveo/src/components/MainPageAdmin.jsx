@@ -6,16 +6,19 @@ import { useNavigate } from "react-router-dom";
 import SearchIcon from '@mui/icons-material/Search';
 import axios from 'axios';
 
-
+/**
+ * MainPageAdmin Component
+ * This page allows the admin to search for songs and move the result to the result page.
+ * Admin enters a song name, searches, and the results are fetched from the backend.
+ */
 export default function MainPageAdmin() {
-    // const [songFoundDetails, setSongFoundDetails] = useState("");
     const [searchText, setSearchText] = useState("");
     // eslint-disable-next-line no-unused-vars
     const [songs, setSongs] = useState([]);
 
     const navigate = useNavigate();
 
-    const songsData = import.meta.glob("../songs/*.json") //loading JSON file
+    const songsData = import.meta.glob("../songs/*.json") //loading JSON file for hard-coded song database
     const [loading, setLoading] = useState(false)
 
 
@@ -51,10 +54,12 @@ export default function MainPageAdmin() {
             .join(" ")
             .toLowerCase();
 
-        return { lyricsText, chordsText }; // return tuple of both strings
+        return { lyricsText, chordsText };
     };
 
-
+    /**
+     * Handles the search action - Sends request to the backend to search for songs.
+     */
     const handleSearch = async () => {
         if (!searchText.trim()) return; // Don't search if empty input
         setLoading(true);
@@ -69,12 +74,12 @@ export default function MainPageAdmin() {
             }
         } catch (error) {
             console.error("Error fetching songs:", error);
-        }finally{
+        } finally {
             setLoading(false);
         }
     };
 
-    
+
 
     return (
         <Box
@@ -83,9 +88,9 @@ export default function MainPageAdmin() {
             alignItems="center"
             justifyContent="center"
             height="100vh"
-            px={2} // Padding for responsiveness
+            px={2}
         >
-            <Box 
+            <Box
                 display="flex"
                 alignItems="center"
                 width="90%"
@@ -97,19 +102,18 @@ export default function MainPageAdmin() {
                     value={searchText}
                     variant="outlined"
                     onChange={(e) => setSearchText(e.target.value)}
-                    sx={{ flex: 1, mr: 1 }} // חיפוש מתרחב עם רווח קטן לכפתור
+                    sx={{ flex: 1, mr: 1 }}
                 />
-                <Button 
-                    variant="contained" 
-                    onClick={handleSearch} 
+                <Button
+                    variant="contained"
+                    onClick={handleSearch}
                     disabled={loading}
-                    sx={{ minWidth: 50, height: "56px" }} // גודל אחיד לכפתור כמו השדה
+                    sx={{ minWidth: 50, height: "56px" }}
                 >
                     <SearchIcon />
                 </Button>
             </Box>
-    
-            {/* יצירת מקום קבוע ל-Loading */}
+
             <Box height={40} mt={2} display="flex" justifyContent="center" alignItems="center">
                 {loading && <CircularProgress />}
             </Box>

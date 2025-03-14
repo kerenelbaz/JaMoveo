@@ -4,6 +4,14 @@ import { Link, useNavigate } from "react-router-dom";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import axios from "axios";
 
+
+/**
+ * Login component for user authentication.
+ * Allows users to log in, handle authentication errors, and navigate between pages.
+ * 
+ * @param {Function} setIsLogged - Function to update the login state.
+ * @param {Function} setUserLogged - Function to store the logged-in user.
+ */
 export default function Login({ setIsLogged, setUserLogged }) {
     const [formData, setFormData] = useState({ username: '', password: '' });
     const [loginFailed, setLoginFailed] = useState(false);

@@ -4,6 +4,13 @@ import { TextField, Button, Snackbar, Alert, IconButton, Box, Card, CardContent,
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import axios from "axios";
 
+/**
+ * Admin login component that allows an admin to log in and navigate to the admin panel.
+ * It includes form handling, API request to authenticate the user, and UI elements.
+ * 
+ * @param {Function} setIsLogged - Function to update login state.
+ * @param {Function} setUserLogged - Function to set the logged-in username.
+ */
 export default function AdminLogin({ setIsLogged, setUserLogged }) {
     const [formData, setFormData] = useState({ username: '', password: '' });
     const [loginFailed, setLoginFailed] = useState(false);

@@ -5,7 +5,13 @@ import { ArrowBackIosNew } from "@mui/icons-material";
 import axios from "axios";
 import Autocomplete from "@mui/material/Autocomplete";
 
-
+/**
+ * Register component for user sign-up.
+ * Allows new users to register by providing a username, password, and selecting an instrument.
+ * 
+ * @param {Function} setIsLogged - Function to update the login state upon successful registration.
+ * @param {Function} setUserLogged - Function to store the newly registered user.
+ */
 export default function Register({ setIsLogged, setUserLogged }) {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({

@@ -7,9 +7,18 @@ import Typography from '@mui/material/Typography';
 import socket from '../socket';
 import '../styleByMe.css';
 
+/**
+ * MainPage component
+ * This page is displayed while users are waiting for the admin to choose a song.
+ * Once a song is selected, users are automatically redirected to the live session page.
+ */
 export default function MainPage() {
     const navigate = useNavigate();
 
+    /**
+     * useEffect hook to listen for the "song_selected" event from the server.
+     * When a song is selected, it navigates to the live session page with the song details.
+     */
     useEffect(() => {
         socket.on("song_selected", (song) => {
             navigate("/live", { state: { song } });
