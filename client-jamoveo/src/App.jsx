@@ -13,16 +13,20 @@ import Result from './components/Result'
 import LivePage from './components/LivePage'
 
 function App() {
-
+  // State to track login status and the currently logged-in user
   const [islogged, setIsLogged] = useState(false);
   const [userLogged, setUserLogged] = useState(null);
 
+  /**
+   * useEffect hook to handle WebSocket connection.
+   * Connects socket only if the user is logged in and emits user connection.
+   */
   useEffect(() => {
     if (!islogged || !userLogged) {
       console.log("⚠️ User is not logged in. Skipping socket connection.");
       return;
     }
-    socket.connect();
+    socket.connect(); // Establish WebSocket connection
     socket.emit("user_connected", userLogged);
     socket.on("disconnect", () => {
       console.log("❌ Disconnected from server");
