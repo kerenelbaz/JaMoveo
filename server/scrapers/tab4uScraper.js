@@ -7,70 +7,77 @@ const DATA_FOLDER = path.join(__dirname, "data");
 if (!fs.existsSync(DATA_FOLDER)) {
     fs.mkdirSync(DATA_FOLDER, { recursive: true });
 }
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 async function searchSongs(songName) {
+    await delay(5000);
     const browser = await puppeteer.launch({
         args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
     const page = await browser.newPage();
-    const searchUrl = `https://www.tab4u.com/resultsSimple?tab=songs&q=${encodeURIComponent(songName)}`;
+    
+    try {
+        const searchUrl = `https://www.tab4u.com/resultsSimple?tab=songs&q=${encodeURIComponent(songName)}`;
+        console.log(`Searching for songs: ${songName}`);
+        
+        await page.goto(searchUrl, { waitUntil: "networkidle2", timeout: 60000 });
 
-    console.log(`Searching for songs: ${songName}`);
-    // await page.goto(searchUrl, { waitUntil: "networkidle2" });
-    await page.goto(searchUrl, { waitUntil: "networkidle2", timeout: 60000 });
+        let allSongs = [];
+        let pageNum = 1;
 
-    let allSongs = [];
-    let pageNum = 1;
+        while (true) {
+            console.log(`Extracting results from page ${pageNum}...`);
+            await page.waitForSelector("div.pageWrapMic", { timeout: 20000 });
 
-    while (true) {
-        console.log(`Extracting results from page ${pageNum}...`);
+            const songs = await page.evaluate(() => {
+                return Array.from(document.querySelectorAll("div.pageWrapMic a.ruSongLink.songLinkT"))
+                    .map(link => {
+                        let title = link.querySelector(".sNameI19")?.innerText.trim();
+                        let artist = link.querySelector(".aNameI19")?.innerText.trim();
+                        let href = link.getAttribute("href");
 
-        // Wait for results
-        await page.waitForSelector("div.pageWrapMic", { timeout: 20000 });
+                        if (title) {
+                            title = title.replace(/^\/|\/$/g, "").trim();
+                            title = title.replace(/\s+/g, " ");
+                        }
 
-        // Extract song results from current page
-        const songs = await page.evaluate(() => {
-            return Array.from(document.querySelectorAll("div.pageWrapMic a.ruSongLink.songLinkT"))
-                .map(link => {
-                    let title = link.querySelector(".sNameI19")?.innerText.trim();
-                    let artist = link.querySelector(".aNameI19")?.innerText.trim();
-                    let href = link.getAttribute("href");
+                        return href ? {
+                            title: title || "Unknown",
+                            artist: artist || "Unknown",
+                            link: `https://www.tab4u.com/${href}`
+                        } : null;
+                    })
+                    .filter(song => song !== null);
+            });
 
-                    if (title) {
-                        title = title.replace(/^\/|\/$/g, "").trim(); // Remove `/` at start or end
-                        title = title.replace(/\s+/g, " "); // Replace multiple spaces with a single space
-                    }
+            allSongs.push(...songs);
 
-                    return href ? {
-                        title: title || "Unknown",
-                        artist: artist || "Unknown",
-                        link: `https://www.tab4u.com/${href}`
-                    } : null;
-                })
-                .filter(song => song !== null);
-        });
+            const nextPageButton = await page.$("a.nextPre.h");
+            if (!nextPageButton) {
+                console.log("No more pages.");
+                break;
+            }
 
-        allSongs.push(...songs);
+            await Promise.all([
+                nextPageButton.click(),
+                page.waitForNavigation({ waitUntil: "networkidle2" })
+            ]);
 
-        // Check if there's a "Next Page" button
-        const nextPageButton = await page.$("a.nextPre.h");
-        if (!nextPageButton) {
-            console.log("No more pages.");
-            break;
+            pageNum++;
         }
 
-        // Click "Next Page" and wait for navigation
-        await Promise.all([
-            nextPageButton.click(),
-            page.waitForNavigation({ waitUntil: "networkidle2" })
-        ]);
+        console.log(`Total results found: ${allSongs.length}`);
+        return allSongs;
 
-        pageNum++;
+    } catch (error) {
+        console.error("❌ ERROR in searchSongs:", error.message);
+        return [];
+
+    } finally {
+        await browser.close(); // **💡 סוגר את Puppeteer בכל מצב!**
     }
-
-    await browser.close();
-    console.log(`Total results found: ${allSongs.length}`);
-    return allSongs;
 }
 
 async function fetchSongDetails(songUrl) {
