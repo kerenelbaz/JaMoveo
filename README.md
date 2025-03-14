@@ -5,7 +5,7 @@ When the manager ends the song, users are redirected back to the waiting page un
 ## Running the Project
 The server is deployed on Railway, but due to deployment issues, the client-side application is only available locally. You can run the client using the following command: `npm run dev`
 
-##Technologies:
+## Technologies:
 - **Backend**: Node.js, Express.js, MongoDB
 - **Frontend**: React.js
 - **Additional**: Web scraping with Puppeteer, Socket.io for real-time updates
