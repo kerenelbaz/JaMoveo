@@ -10,7 +10,7 @@ const corsOptions = {
     origin: ["http://localhost:5173", "https://jamoveo-production-311f.up.railway.app"],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
+    credentials: true, // Allow cookies/session authentication
 };
 app.use(cors(corsOptions));
 
@@ -25,7 +25,6 @@ mongoose.connect(process.env.MONGO_URI)
     });
 
 const server = http.createServer(app);
-// const io = new Server(server, { cors: { origin: "*" } });
 const io = new Server(server, {
     cors: {
         origin: ["http://localhost:5173", "https://jamoveo-production-311f.up.railway.app"],
@@ -36,9 +35,10 @@ const io = new Server(server, {
 const users = {}
 let current_song = null;
 
+// Handle WebSocket connections
 io.on("connection", (socket) => {
 
-    socket.on("user_connected", (userData) => {
+    socket.on("user_connected", (userData) => { // Stored user data when connects
         users[socket.id] = userData;
 
         if (current_song) {
@@ -46,14 +46,13 @@ io.on("connection", (socket) => {
         }
     });
 
-    socket.on("get_user_data", () => {
+    socket.on("get_user_data", () => { // Handle request for user data
         if (users[socket.id]) {
-
             socket.emit("user_data", users[socket.id]);
         }
     });
 
-    socket.on("admin_selected_song", async (song) => {
+    socket.on("admin_selected_song", async (song) => { // Fetch the admin's selected song
 
         try {
             // Get full song details before broadcasting
@@ -63,7 +62,7 @@ io.on("connection", (socket) => {
                 console.error("❌ Failed to fetch song details.");
                 return;
             }
-            // Merge full details with existing song data
+            // Merge fetched details with selected song
             const fullSong = {
                 ...song,
                 lyrics: fullSongDetails.lyrics,
@@ -78,7 +77,7 @@ io.on("connection", (socket) => {
         }
     });
 
-    socket.on("quit_session", () => {
+    socket.on("quit_session", () => { // Admin quit the session
         current_song = null;
         io.emit("live_session_quit");
     });
